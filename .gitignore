@@ -1,0 +1,10 @@
+# Quartus folders
+output/**/
+
+# src/*.qsf
+# src/*.qpf
+# src/*.qws
+
+# Documentation
+docs/*
+!docs/*.png
