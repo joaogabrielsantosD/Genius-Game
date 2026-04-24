@@ -1,9 +1,12 @@
 # Quartus folders
-output/**/
+output/**/*
+db/*
+incremental_db/*
 
-# src/*.qsf
-# src/*.qpf
-# src/*.qws
+src/*.bak
+# *.qsf
+# *.qpf
+*.qws
 
 # Documentation
 docs/*
