@@ -1,5 +1,6 @@
 # Resumo do Projeto
 
+```bash
 project/
 ├── src/           # .tdf (AHDL source) and .bdf (block diagrams) files
 │   ├── top.tdf    # Top-level Entity
@@ -10,3 +11,4 @@ project/
 ├── output/        # Generated files: .sof, .pof, .rpt
 ├── docs/          # Schematics, specifications
 └── README.md
+```
