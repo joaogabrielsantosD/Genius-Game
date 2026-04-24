@@ -11,3 +11,4 @@ src/*.bak
 # Documentation
 docs/*
 !docs/*.png
+!output/README.md
