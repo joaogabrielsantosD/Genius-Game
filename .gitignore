@@ -4,6 +4,7 @@ db/*
 incremental_db/*
 
 src/*.bak
+src/**/*.bak
 # *.qsf
 # *.qpf
 *.qws
