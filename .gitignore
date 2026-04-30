@@ -1,5 +1,7 @@
 # Quartus folders
 output/**/*
+output_files/**/*
+simulation/**/*
 db/*
 incremental_db/*
 
