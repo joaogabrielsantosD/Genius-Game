@@ -1,0 +1,53 @@
+TITLE "Debounce Filter";
+
+CONSTANT clk_FPGA = 50000000;								  -- Clock frequency of the FPGA in Hz
+CONSTANT freq = 50;											  -- Desired output frequency for the debounce sampling clock (50 Hz)
+CONSTANT overflow_f = CEIL(clk_FPGA DIV (freq * 2)); -- Counter overflow value: number of FPGA clock cycles per half-period of the sampling clock
+CONSTANT n_bits_f = LOG2(overflow_f); 					  -- Number of bits required for the counter to reach overflow_f
+
+SUBDESIGN debounce
+(
+	clock, key_in : INPUT;   -- Main FPGA clock and raw (bouncy) key input
+	f_key_out     : OUTPUT;  -- Filtered (debounced) key output pulse
+)
+
+VARIABLE
+	cnt[n_bits_f..0] : DFF;  -- Counter used to divide the main clock down to 50 Hz
+	alt              : TFF;  -- Toggle flip-flop that produces the divided clock signal
+	clk_out          : NODE; -- Internal node carrying the 50 Hz divided clock
+
+	dff1             : DFF;  -- First stage flip-flop: samples key_in on the slow clock
+	dff2             : DFF;  -- Second stage flip-flop: delays dff1 by one slow-clock cycle
+
+BEGIN
+
+	-- Connect main clock to the counter and toggle flip-flop
+	cnt[].clk = clock;
+	alt.clk   = clock;
+
+	-- Clock divider: increment counter until overflow, then reset and toggle alt
+	IF cnt[] < overflow_f THEN
+		cnt[].d = cnt[] + 1;  -- Keep counting
+	ELSE
+		cnt[].d = 0;          -- Reset counter
+		alt.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+
+	-- Divided clock output at 50 Hz
+	clk_out = alt;
+
+	-- Both sampling flip-flops run on the slow 50 Hz clock
+	dff1.clk = clk_out;
+	dff2.clk = clk_out;
+
+	-- Sample the (active-low) key input; invert so logic HIGH means key is pressed
+	dff1.d = NOT key_in;
+
+	-- Delay dff1 output by one slow-clock cycle for edge detection
+	dff2.d = dff1.q;
+
+	-- Rising-edge detector: output is HIGH for exactly one slow-clock cycle
+	-- when a key press is first detected (dff1 just went HIGH, dff2 still LOW)
+	f_key_out = dff1.q AND (NOT dff2.q);
+
+END;

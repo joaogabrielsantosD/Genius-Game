@@ -1,27 +1,47 @@
-TITLE "Top level Entity";
-CONSTANT max_cnt = 10;
-CONSTANT n = CEIL(LOG2(max_cnt));
+TITLE "Top file";
+
+INCLUDE "src/Debounce/debounce.inc";
+INCLUDE "src/FSM/FSM.inc";
+
+DEFINE GAME_LIMIT(a) = ((a < 50) ? a : 50);  -- The max game rounds can be is 50 rounds
+
+CONSTANT MAX_ROUNDS = GAME_LIMIT(20); 		   -- Max game value in this section
+CONSTANT GAME_SIZE = CEIL(LOG2(MAX_ROUNDS)); -- Size in bits of the max rounds 
 
 SUBDESIGN top
 (
-	clk, load, ena, clr, d[n..0] : INPUT;
-	q[n..0], tc                  : OUTPUT;
+	clock : INPUT;
+	reset : INPUT;
+	
+	key[3..0] : INPUT;
+	
+	buzzer : OUTPUT;
 )
+
 VARIABLE
-	cnt[n..0] : DFF;
-	aux: NODE;
+	game_fsm : FSM WITH (SIZE = GAME_SIZE, MAX_ROUNDS = MAX_ROUNDS);
+	
+	key0, key1, key2, key3 : debounce;
+	
 BEGIN
 	DEFAULTS
-		q[] = 0; tc = GND;
+		buzzer = GND;
 	END DEFAULTS;
-	cnt[].clk = clk;
-	cnt[].clrn = !clr;
-	IF load == VCC THEN cnt[].d = d[];
-	ELSIF () THEN
-		aux = VCC;
-		cnt[].d = 0;
-	ELSE cnt[n..0].d = cnt[n..0].q;
-	END IF;
-	tc = aux;
-	q[] = cnt[];
+	
+	-- Debounce Inputs --
+	key0.clock  = clock; key0.key_in = key[0];
+	key1.clock  = clock; key1.key_in = key[1];
+	key2.clock  = clock; key2.key_in = key[2];
+	key3.clock  = clock; key3.key_in = key[3];
+	
+	-- FSM Inputs --
+	game_fsm.clock = clock;
+	game_fsm.reset = reset;
+	game_fsm.key0 = key0.f_key_out; game_fsm.key0_raw = key[0]; 
+	game_fsm.key1 = key1.f_key_out;
+	game_fsm.key2 = key2.f_key_out;
+	game_fsm.key3 = key3.f_key_out; game_fsm.key3_raw = key[3];
+	
+	-- FSM Outputs -- 
+	buzzer = game_fsm.buzzer;
 END;

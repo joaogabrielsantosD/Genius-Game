@@ -1,32 +1,39 @@
 -- TODO: Implement 7seg and add in the states
--- TODO put GAME_LIMIT in top.bdf and pass GAME_SIZE how PARAMETERS()
--- TODO: Implement Debounce Filter
 -- TODO: Add led output according the color
 -- TODO: Add tunes buzzer according the color
 -- TODO: Implement the random algorithm
 
 TITLE "FSM";
 
-DEFINE GAME_LIMIT(a) = ((a < 50) ? a : 50);  -- The max game rounds can be is 50 rounds
 CONSTANT DELAY_500MS = 50000000; 			   -- Delay for 50MHz Clock, after 50000000 pulses
 CONSTANT DELAY_250MS = DELAY_500MS DIV 2; 	-- Delay for 50MHz Clock, after 25000000 pulses
 CONSTANT DELAY_5S = DELAY_500MS * 10; 			-- Delay for 50MHz Clock, after 5s
-CONSTANT MAX_ROUNDS = GAME_LIMIT(20); 		   -- Max game value in this section
-CONSTANT GAME_SIZE = CEIL(LOG2(MAX_ROUNDS)); -- Size in bits of the max rounds 
 
+PARAMETERS (SIZE = 5, MAX_ROUNDS = 20);
 SUBDESIGN FSM
 (
 	clock, reset : INPUT;  -- Clock and reset signal
-	key[3..0] 	 : INPUT;  -- Keys/Buttons inputs
-	buzzer       : OUTPUT; -- Buzzer output
+
+	key0_raw : INPUT;
+	key3_raw : INPUT;
+	
+	key0 : INPUT;  -- Keys/Buttons inputs
+	key1 : INPUT;  -- Keys/Buttons inputs
+	key2 : INPUT;  -- Keys/Buttons inputs
+	key3 : INPUT;  -- Keys/Buttons inputs
+	
+	buzzer : OUTPUT; -- Buzzer output
 )
 
 VARIABLE
 	fsm_states   : MACHINE WITH STATES(IDLE, START_GAME, SET_COLOR, WAIT, READ_COLOR, PLAYER_WIN, PLAYER_LOSE); -- FSM states
-	delay[32..0] : DFF; -- Game target delay (4 bytes)
+	delay[31..0] : DFF; -- Game target delay (4 bytes)
 	
-	game_round[GAME_SIZE-1..0] : DFF; -- Save the current round
-	temp[GAME_SIZE-1..0] 		: DFF; -- counter to current round
+	game_round[SIZE-1..0] : DFF; -- Save the current round
+	temp[SIZE-1..0] 		: DFF; -- counter to current round
+	
+	key0_flag : DFF;
+	key3_flag : DFF;
 	
 BEGIN
 	DEFAULTS
@@ -35,17 +42,33 @@ BEGIN
 		delay[].d = 0;
 		game_round[].d = 1; -- Start round 1
 		temp[].d = 1;		  -- Start round 1
+		key0_flag.d = GND;
+		key3_flag.d = GND;
 	END DEFAULTS;
+	
+	fsm_states.clk = clock; -- Syncronize clock
+	fsm_states.reset = !reset; -- Reset FSM
+	
+	delay[].clk = clock;  -- Syncronize clock
+	delay[].clrn = reset; -- Reset FSM
+	
+	game_round[].clk = clock;  -- Syncronize clock
+	game_round[].clrn = reset; -- Reset FSM
+
+	temp[].clk = clock;  -- Syncronize clock
+	temp[].clrn = reset; -- Reset FSM
+	
+	key0_flag.clk = clock; key0_flag.clrn = reset;
+	key3_flag.clk = clock; key3_flag.clrn = reset;
+	
+	IF key0 THEN
+		key0_flag.d = VCC;
+	END IF;
 		
-		fsm_states.clk = clock; -- Syncronize clock
-		fsm_states.reset = !reset; -- Reset FSM
-		
-		delay[].clk = clock;  -- Syncronize clock
-		delay[].clrn = reset; -- Reset FSM
-		
-		game_round[].clk = clock;  -- Syncronize clock
-		game_round[].clrn = reset; -- Reset FSM
-		
+	IF key3 THEN
+		key3_flag.d = VCC;
+	END IF;
+	
 	CASE fsm_states IS
 		
 		WHEN IDLE =>
@@ -58,7 +81,9 @@ BEGIN
 			delay[].d = 0; 		-- reset delay counter
 			
 			-- Sequence to start the game (key[0] + key[3])
-			IF key[] == B"0110" THEN
+			IF (key0_flag.q AND key3_flag.q) or (NOT key0_raw AND NOT key3_raw) THEN
+				key0_flag.d = GND;
+				key3_flag.d = GND;
 				fsm_states = START_GAME;
 			ELSE
 				fsm_states = IDLE;
@@ -68,7 +93,7 @@ BEGIN
 			-- TODO: Clear 7seg here (7seg.inc)
 			-- TODO: Clear output led
 			-- TODO: Clear output tone buzzer
-			
+
 			IF	delay[] < DELAY_500MS THEN -- Wait 0.5s to set the color
 				delay[].d = delay[] + 1;
 			ELSE
@@ -111,23 +136,24 @@ BEGIN
 			IF delay[] < DELAY_5S THEN
 				delay[].d = delay[] + 1;
 				
-				IF VCC == VCC THEN 					-- TODO: cor_de_entrada == cor_da_sequencia
-					-- TODO  (1 & 2 & 3)
-					-- INVERSE OF TODO (1 & 2 & 3) 		-- create a pulse only
-					IF VCC == VCC THEN				-- TODO: cor_de_entrada == cor_da_ultima_sequencia
-						IF game_round[] == MAX_ROUNDS THEN
-							fsm_states = PLAYER_WIN;
-						ELSE
-							temp[].d = 1;
-							game_round[].d = game_round[] + 1; -- Increment gamee round
-							fsm_states = START_GAME;
-						END IF;
-					delay[].d = 0;
-					END IF;
-				ELSE
-					delay[].d = 0;
-					fsm_states = PLAYER_LOSE;
-				END IF;
+				-- IF GND == VCC THEN 					-- TODO: cor_de_entrada == cor_da_sequencia
+				-- 	-- TODO  (1 & 2 & 3)
+				-- 	-- INVERSE OF TODO (1 & 2 & 3) 		-- create a pulse only
+				-- 	IF VCC == VCC THEN				-- TODO: cor_de_entrada == cor_da_ultima_sequencia
+				-- 		IF game_round[] == MAX_ROUNDS THEN
+				-- 			fsm_states = PLAYER_WIN;
+				-- 		ELSE
+				-- 			temp[].d = 1;
+				-- 			game_round[].d = game_round[] + 1; -- Increment gamee round
+				-- 			fsm_states = START_GAME;
+				-- 		END IF;
+				-- 	END IF;
+				-- 	
+				-- 	delay[].d = 0;
+				-- ELSE
+				-- 	delay[].d = 0;
+				-- 	fsm_states = PLAYER_LOSE;
+				-- END IF;
 			ELSE
 				delay[].d = 0;
 				fsm_states = PLAYER_LOSE;
@@ -143,6 +169,7 @@ BEGIN
 			-- TODO: CLear 7seg (7seg.inc)
 			-- TODO: Clear output led
 			-- TODO: Loser output tone buzzer
+			buzzer = VCC;
 			fsm_states = PLAYER_LOSE;
 			
 		WHEN OTHERS =>
