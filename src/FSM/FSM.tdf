@@ -22,7 +22,8 @@ SUBDESIGN FSM
 	key2 : INPUT;  -- Keys/Buttons inputs
 	key3 : INPUT;  -- Keys/Buttons inputs
 	
-	buzzer : OUTPUT; -- Buzzer output
+	led_out[3..0] : OUTPUT;
+	b : OUTPUT; -- Buzzer output
 )
 
 VARIABLE
@@ -38,7 +39,8 @@ VARIABLE
 BEGIN
 	DEFAULTS
 		-- fsm_states = IDLE; -- Set FSM how IDLE
-		buzzer = GND;
+		b = GND;
+		led_out[] = 0;
 		delay[].d = 0;
 		game_round[].d = 1; -- Start round 1
 		temp[].d = 1;		  -- Start round 1
@@ -73,7 +75,7 @@ BEGIN
 		
 		WHEN IDLE =>
 			-- TODO: Show record value (7seg.inc)
-			-- TODO: Clear output led
+			led_out[] = 0;
 			-- TODO: Clear output tone buzzer
 			
 			game_round[].d = 1;  -- reset game
@@ -81,7 +83,7 @@ BEGIN
 			delay[].d = 0; 		-- reset delay counter
 			
 			-- Sequence to start the game (key[0] + key[3])
-			IF (key0_flag.q AND key3_flag.q) or (NOT key0_raw AND NOT key3_raw) THEN
+			IF (key0_flag.q AND key3_flag.q) OR (NOT key0_raw AND NOT key3_raw) THEN
 				key0_flag.d = GND;
 				key3_flag.d = GND;
 				fsm_states = START_GAME;
@@ -91,7 +93,7 @@ BEGIN
 		
 		WHEN START_GAME =>
 			-- TODO: Clear 7seg here (7seg.inc)
-			-- TODO: Clear output led
+			led_out[] = 0;
 			-- TODO: Clear output tone buzzer
 
 			IF	delay[] < DELAY_500MS THEN -- Wait 0.5s to set the color
@@ -161,15 +163,17 @@ BEGIN
 			
 		WHEN PLAYER_WIN =>
 			-- TODO: Show record 7seg (7seg.inc)
-			-- TODO: Clear output led
+			led_out[] = 0;
 			-- TODO: Winner output tone buzzer
+			
 			fsm_states = PLAYER_WIN;
 			
 		WHEN PLAYER_LOSE =>
 			-- TODO: CLear 7seg (7seg.inc)
-			-- TODO: Clear output led
+			led_out[] = 0;
 			-- TODO: Loser output tone buzzer
-			buzzer = VCC;
+			
+			b = VCC;
 			fsm_states = PLAYER_LOSE;
 			
 		WHEN OTHERS =>
