@@ -46,6 +46,7 @@ BEGIN
 	game_fsm.key3 = key3.f_key_out; %  Debounce Output % game_fsm.key3_raw = key[3];
 	
 	-- FSM Outputs -- 
-	led[] = game_fsm.led_out[];
+	led[] = NOT game_fsm.led_out[];
 	beep = game_fsm.b;
 END;
+

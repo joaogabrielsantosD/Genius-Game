@@ -41,9 +41,11 @@ BEGIN
 		-- fsm_states = IDLE; -- Set FSM how IDLE
 		b = GND;
 		led_out[] = 0;
+		
 		delay[].d = 0;
 		game_round[].d = 1; -- Start round 1
 		temp[].d = 1;		  -- Start round 1
+		
 		key0_flag.d = GND;
 		key3_flag.d = GND;
 	END DEFAULTS;
@@ -109,12 +111,12 @@ BEGIN
 			-- TODO: Set led output according the color
 			-- TODO: Show the number in 7seg according the color
 			-- TODO: Output tone buzzer according the color
-			
 			fsm_states = WAIT;
 			
 		WHEN WAIT =>
 			IF delay[] < DELAY_250MS THEN -- wait 0.25s to the next color
 				delay[].d = delay[] + 1;
+				led_out[] = B"0001";
 				fsm_states = WAIT;
 			ELSE
 				delay[].d = 0;
@@ -137,6 +139,14 @@ BEGIN
 			
 			IF delay[] < DELAY_5S THEN
 				delay[].d = delay[] + 1;
+				
+				IF key0 THEN led_out[] = B"0001"; fsm_states = PLAYER_WIN; delay[].d = 0;
+				ELSIF key1 THEN led_out[] = B"0010";
+				ELSIF key2 THEN led_out[] = B"0100";
+				ELSIF key3 THEN led_out[] = B"1000";
+				ELSE         led_out[] = 0;
+				END IF;
+				
 				
 				-- IF GND == VCC THEN 					-- TODO: cor_de_entrada == cor_da_sequencia
 				-- 	-- TODO  (1 & 2 & 3)
@@ -163,7 +173,7 @@ BEGIN
 			
 		WHEN PLAYER_WIN =>
 			-- TODO: Show record 7seg (7seg.inc)
-			led_out[] = 0;
+			led_out[] = B"1111";
 			-- TODO: Winner output tone buzzer
 			
 			fsm_states = PLAYER_WIN;
