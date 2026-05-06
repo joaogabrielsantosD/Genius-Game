@@ -1,0 +1,134 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{caption}
+\usepackage{float}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinelanguage{AHDL}{
+  keywords={SUBDESIGN, BEGIN, END, VARIABLE, IF, THEN, ELSE, ELSIF, CASE, IS, WHEN, OTHERS, CONSTANT, NODE, DFF, INPUT, OUTPUT, BIDIR, AND, OR, NOT, XOR, WITH, SELECT, GND, VCC},
+  sensitive=true,
+  morecomment=[l]{--},
+  morestring=[b]",
+}
+
+\lstset{
+  language=AHDL,
+  backgroundcolor=\color{backcolour},
+  basicstyle=\footnotesize\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{codegreen},
+  stringstyle=\color{codepurple},
+  numbers=left,
+  numberstyle=\tiny\color{codegray},
+  stepnumber=1,
+  numbersep=8pt,
+  showspaces=false,
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  captionpos=b,
+}
+
+\newtheorem{theorem}{Teorema}[section]
+\newtheorem{lemma}[theorem]{Lema}
+\newtheorem{proposition}[theorem]{Proposição}
+
+\title{Discrete Arnold Cat Map}
+\author{Matheus Sousa, matheus.henriquesousa@ufpe.br}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\section{Discrete Arnold Cat Map}
+O \textit{Arnold Cat Map} é uma transformação caótica bidimensional clássica. Sua versão discreta, definida sobre o anel \(\mathbb{Z}_{q}\) com \(q=2^m\) (\(m\ge 2\)), é dada por
+\begin{equation}\label{eq:dacm}
+\mathbf{F}(x,y) = (2x + y,\; x + y) \pmod{2^m}.
+\end{equation}
+A aplicação iterativa de \(\mathbf{F}\) a partir de uma condição inicial \((x_0,y_0)\in \mathbb{Z}_{2^m}\times\mathbb{Z}_{2^m}\) gera uma sequência bidimensional \(\{(x_n,y_n)\}_{n\ge 0}\) governada pela equação matricial
+\begin{equation}\label{eq:matriz}
+\begin{pmatrix} x_n \\ y_n \end{pmatrix}
+= \mathbf{A}^n \begin{pmatrix} x_0 \\ y_0 \end{pmatrix} \pmod{2^m},
+\quad \mathbf{A} = \begin{pmatrix} 2 & 1 \\ 1 & 1 \end{pmatrix}.
+\end{equation}
+
+\subsection{Relação com a Sequência de Fibonacci}
+A matriz \(\mathbf{A}\) está intimamente ligada aos números de Fibonacci. Seja \(F_k\) o \(k\)-ésimo número de Fibonacci, com \(F_0=0,\;F_1=1\). Vale o seguinte resultado, cuja demonstração é feita por indução.
+
+\begin{lemma}\label{lem:fib}
+Para todo inteiro \(n\ge 1\),
+\[
+\mathbf{A}^n = \begin{pmatrix}
+F_{2n+1} & F_{2n} \\
+F_{2n}   & F_{2n-1}
+\end{pmatrix}.
+\]
+\end{lemma}
+\begin{proof}
+Para \(n=1\), \(\mathbf{A}^1 = \begin{pmatrix}2&1\\1&1\end{pmatrix} = \begin{pmatrix}F_3&F_2\\F_2&F_1\end{pmatrix}\). Supondo a igualdade válida para \(n\), temos
+\[
+\mathbf{A}^{n+1} = \mathbf{A}\,\mathbf{A}^n
+= \begin{pmatrix}2&1\\1&1\end{pmatrix}
+\begin{pmatrix}F_{2n+1}&F_{2n}\\F_{2n}&F_{2n-1}\end{pmatrix}.
+\]
+O elemento \((1,1)\) do produto é
+\[
+2F_{2n+1}+F_{2n} = F_{2n+1}+(F_{2n+1}+F_{2n}) = F_{2n+1}+F_{2n+2} = F_{2n+3},
+\]
+onde usamos a identidade \(F_{k+2}=F_{k+1}+F_k\). Analogamente, os demais elementos fornecem \(F_{2n+2}\) e \(F_{2n+1}\), completando a indução.
+\end{proof}
+
+Portanto, a dinâmica do DACM é equivalente a
+\begin{equation}\label{eq:fibdacm}
+\begin{pmatrix} x_n \\ y_n \end{pmatrix}
+= \begin{pmatrix}
+F_{2n+1} & F_{2n} \\
+F_{2n}   & F_{2n-1}
+\end{pmatrix}
+\begin{pmatrix} x_0 \\ y_0 \end{pmatrix} \pmod{2^m}.
+\end{equation}
+
+\subsection{Período do DACM sobre \(\mathbb{Z}_{2^m}\)}
+A sequência gerada é periódica, pois o espaço de estados é finito (\(2^{2m}\) pares). O período \(T_A\) é o menor inteiro positivo \(n\) tal que \(\mathbf{A}^n \equiv \mathbf{I} \pmod{2^m}\), i.e.,
+\[
+F_{2n}\equiv 0 \pmod{2^m}, \qquad F_{2n-1}\equiv 1 \pmod{2^m},\qquad F_{2n+1}\equiv 1 \pmod{2^m}.
+\]
+Basta que exista \(k\) tal que \(F_k\equiv 0\) e \(F_{k+1}\equiv 1 \pmod{2^m}\), pois nesse caso \(k\) é um período da sequência de Fibonacci módulo \(2^m\). O \textit{período de Pisano} \(\pi(2^m)\) é conhecido:
+\[
+\pi(2^m) = 3\cdot 2^{m-1}, \quad m\ge 3.
+\]
+Para \(m=2\), \(\pi(4)=6\). Como desejamos \(k=2n\) (um número par), e \(\pi(2^m)\) é sempre par para \(m\ge2\), o menor \(k\) que satisfaz as congruências é o próprio \(\pi(2^m)\). Consequentemente, \(2n = \pi(2^m)\), donde
+\[
+n = \frac{\pi(2^m)}{2} = \frac{3\cdot 2^{m-1}}{2} = 3\cdot 2^{m-2}.
+\]
+
+\begin{proposition}[Período do DACM]
+Para \(m\ge 2\), o período do mapa \eqref{eq:dacm} sobre \(\mathbb{Z}_{2^m}\) é
+\[
+T_A = 3\cdot 2^{m-2}.
+\]
+\end{proposition}
+No presente projeto, adota-se \(m=8\); logo \(T_A = 3\cdot 2^{6} = 192\) iterações. Este valor determina a extensão máxima da sequência de jogadas antes que haja repetição.
+
+\begin{thebibliography}{9}
+\bibitem{souza2025}
+C.~E.~C.~Souza \textit{et al.}, ``High-Throughput Pseudo-Random Number Generators Over Discrete Chaos,'' \textit{IEEE Trans. Circuits Syst. II: Express Briefs}, vol.~72, no.~9, pp.~1303--1307, Sept.~2025.
+\bibitem{wolfram}
+S.~Wolfram, \textit{A New Kind of Science}. Champaign, IL: Wolfram Media, 2002.
+\bibitem{pisano}
+L.~Somer, ``The divisibility properties of Fibonacci numbers,'' \textit{Fibonacci Quart.}, vol.~10, no.~4, pp.~355--358, 1972.
+\end{thebibliography}
+
+\end{document}
