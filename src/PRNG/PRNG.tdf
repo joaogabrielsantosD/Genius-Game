@@ -25,7 +25,7 @@ BEGIN
 	%DEFAULTS
 		xn[].d = xn[].q;
 		yn[].d = yn[].q;
-	    seeded.d = seeded.q;
+	    	seeded.d = seeded.q;
 	END DEFAULTS;%
 
 	xn[].clk = clock;    xn[].clrn = reset;
@@ -43,12 +43,12 @@ BEGIN
 		xn[].d = x_next[];
 		yn[].d = y_next[];
 		seeded.d = seeded.q;
-    ELSE
-      xn[].d = xn[].q;
+    	ELSE
+      		xn[].d = xn[].q;
 		yn[].d = yn[].q;
-	   seeded.d = seeded.q;
+	   	seeded.d = seeded.q;
 	END IF;
 
 	rand[] = xn[1..0].q XOR yn[1..0].q;
-    --rand0[] = xn[m-2 .. m-3].q XOR yn[m-2 .. m-3].q;
+      --rand0[] = xn[m-2 .. m-3].q XOR yn[m-2 .. m-3].q;
 END;

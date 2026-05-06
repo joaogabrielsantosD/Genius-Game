@@ -1,0 +1,48 @@
+TITLE "PRNG";
+
+CONSTANT m = 8;
+CONSTANT SEED_X = B"10100101";
+CONSTANT SEED_Y = B"01100110";
+
+SUBDESIGN PRNG
+(
+	clock, reset : INPUT;
+	enable       : INPUT;
+	rand[1..0]    : OUTPUT;
+    --rand0[1..0]   : OUTPUT;
+)
+
+VARIABLE
+	x[m-1..0] : DFF;
+	y[m-1..0] : DFF;
+	seeded        : DFF;
+
+	x_next[m-1..0] : NODE;
+	y_next[m-1..0] : NODE;
+
+BEGIN
+	DEFAULTS
+		x[].d = x[];
+		y[].d = y[];
+		seeded.d = seeded.q;
+	END DEFAULTS;
+
+	x[].clk = clock; x[].clrn = reset;
+	y[].clk = clock; y[].clrn = reset;
+	seeded.clk = clock; seeded.clrn = reset;
+
+	x_next[] = (x[m-2 .. 0].q, GND) + y[].q;
+	y_next[] = x[].q + y[].q;
+
+	IF seeded.q == GND THEN
+		x[].d = SEED_X;
+		y[].d = SEED_Y;
+		seeded.d = VCC;
+	ELSIF enable THEN
+		x[].d = x_next[];
+		y[].d = y_next[];
+	END IF;
+
+	rand[] = x[1..0].q XOR y[1..0].q;
+    --rand0[] = x[m-2 .. m -3].q XOR y[m-2 .. m-3].q;
+END;
