@@ -1,4 +1,5 @@
 # Quartus folders
+.qsys_edit/*
 output/**/*
 output_files/**/*
 simulation/**/*

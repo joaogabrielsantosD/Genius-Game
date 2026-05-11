@@ -1,0 +1,54 @@
+TITLE "PRNG";	
+
+CONSTANT m = 8;
+CONSTANT SEED_X = B"10100101";
+CONSTANT SEED_Y = B"01100110";
+
+SUBDESIGN PRNG
+(
+	clock, reset : INPUT;
+	enable       : INPUT;
+	
+	rand[1..0]   : OUTPUT;
+)
+
+VARIABLE
+	xn[m-1..0] : DFF;
+	yn[m-1..0] : DFF;
+	seeded     : DFF;
+
+	x_next[m-1..0] : NODE;
+	y_next[m-1..0] : NODE;
+
+BEGIN
+	--DEFAULTS
+	--	xn[].d = xn[].q;
+	--	yn[].d = yn[].q;
+	--   seeded.d = seeded.q;
+	--END DEFAULTS;
+	
+	xn[].clk = clock;    xn[].clrn = reset;
+	yn[].clk = clock;    yn[].clrn = reset;
+	seeded.clk = clock;  seeded.clrn = reset;
+
+	x_next[] = xn[].q XOR (xn[m-2..0].q, GND) XOR yn[].q;
+	y_next[] = yn[].q XOR (GND, yn[m-1..1].q) XOR x_next[];
+
+	IF seeded.q == GND THEN
+		xn[].d = SEED_X;
+		yn[].d = SEED_Y;
+		seeded.d = VCC;
+	ELSIF enable THEN
+		xn[].d = x_next[];
+		yn[].d = y_next[];
+		seeded.d = seeded.q;
+   ELSE
+		xn[].d = xn[].q;
+		yn[].d = yn[].q;
+		seeded.d = seeded.q;
+	END IF;
+
+	rand[] = xn[1..0].q XOR yn[1..0].q;
+	--rand[] = xn[m-2 .. m-3].q XOR yn[m-2 .. m-3].q;
+END;
+
