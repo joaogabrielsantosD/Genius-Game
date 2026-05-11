@@ -5,6 +5,9 @@ simulation/**/*
 db/*
 incremental_db/*
 
+# venv
+.venv/*
+
 src/*.bak
 src/**/*.bak
 # *.qsf
