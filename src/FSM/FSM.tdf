@@ -25,6 +25,7 @@ SUBDESIGN FSM
 	random_color[1..0] : INPUT;
 	
 	led_out[3..0] : OUTPUT;
+	loser : OUTPUT;
 )
 
 VARIABLE
@@ -65,6 +66,7 @@ BEGIN
 	DEFAULTS
 		-- fsm_states = IDLE; -- Set FSM how IDLE
 		led_out[] = 0;
+		loser = GND;
 		
 		delay[].d = 0;
 		game_round[].d = 1; -- Start round 1
@@ -230,7 +232,7 @@ BEGIN
 			
 		WHEN PLAYER_LOSE =>
 			-- TODO: CLear 7seg (7seg.inc)
-			-- TODO: Loser output tone buzzer
+			loser = VCC;
 			led_out[] = B"0110";
 			
 			fsm_states = PLAYER_LOSE;
