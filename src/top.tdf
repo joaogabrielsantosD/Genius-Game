@@ -1,6 +1,7 @@
 TITLE "Top file";
 
 INCLUDE "src/Debounce/debounce.inc";
+INCLUDE "src/Buzzer/beep.inc";
 INCLUDE "src/PRNG/PRNG.inc";
 INCLUDE "src/FSM/FSM.inc";
 
@@ -17,17 +18,20 @@ SUBDESIGN top
 	
 	key[3..0] : INPUT;
 	
-	led[3..0] : OUTPUT;	
+	led[3..0] : OUTPUT;
+	buzzer : OUTPUT;
 )
 
 VARIABLE
 	game_fsm : FSM WITH (SIZE = GAME_SIZE, MAX_ROUNDS = MAX_ROUNDS);
 	rng : PRNG;
+	b : beep;
 	key0, key1, key2, key3 : debounce;
 	
 BEGIN
 	DEFAULTS
-		led[] = 0;
+		led[]  = 0;
+		buzzer = GND;
 	END DEFAULTS;
 	
 	ASSERT (!MAX_ROUNDS)
@@ -54,7 +58,13 @@ BEGIN
 	game_fsm.key2 = key2.f_key_out; %  Debounce OUTPUT %
 	game_fsm.key3 = key3.f_key_out; %  Debounce OUTPUT % game_fsm.key3_raw = key[3];
 	
+	-- Buzzer inputs --
+	b.clock = clock;
+	b.data_in[] = game_fsm.led_out[];
+	b.loser_flag = game_fsm.loser;
+	
 	-- FSM Outputs -- 
 	led[] = NOT game_fsm.led_out[];
+	buzzer = b.beep_out;
 END;
 
