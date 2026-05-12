@@ -1,15 +1,15 @@
 -- TODO: Implement 7seg and add in the states
--- TODO: Add led output according the color
 -- TODO: Add tunes buzzer according the color
--- TODO: Implement the random algorithm
 
 TITLE "FSM";
+
+INCLUDE "lpm_ram_dq.inc";
 
 CONSTANT DELAY_500MS = 50000000; 			   -- Delay for 50MHz Clock, after 50000000 pulses
 CONSTANT DELAY_250MS = DELAY_500MS DIV 2; 	-- Delay for 50MHz Clock, after 25000000 pulses
 CONSTANT DELAY_5S = DELAY_500MS * 10; 			-- Delay for 50MHz Clock, after 5s
 
-PARAMETERS (SIZE = 5, MAX_ROUNDS = 20);
+PARAMETERS (SIZE = 3, MAX_ROUNDS = 5);
 SUBDESIGN FSM
 (
 	clock, reset : INPUT;  -- Clock and reset signal
@@ -22,8 +22,9 @@ SUBDESIGN FSM
 	key2 : INPUT;  -- Keys/Buttons inputs
 	key3 : INPUT;  -- Keys/Buttons inputs
 	
+	random_color[1..0] : INPUT;
+	
 	led_out[3..0] : OUTPUT;
-	b : OUTPUT; -- Buzzer output
 )
 
 VARIABLE
@@ -35,19 +36,46 @@ VARIABLE
 	
 	key0_flag : DFF;
 	key3_flag : DFF;
+
+	color_led[3..0] : DFF;
+	
+	-------------------------------------------------------------------
+   -- RAM: grava a sequência de cores gerada pelo jogo
+   --   LPM_WIDTH    = 2  → cada palavra armazena 1 cor (2 bits)
+   --   LPM_WIDTHAD  = SIZE (5) → 2^5 = 32 endereços possíveis
+   --   LPM_NUMWORDS = MAX_ROUNDS → usa só 20 palavras
+   --   INDATA + ADDRESS_CONTROL = REGISTERED → escrita síncrona (inclock)
+   --   OUTDATA = UNREGISTERED → leitura combinacional imediata em q[]
+   -------------------------------------------------------------------
+   ram : lpm_ram_dq WITH (
+      LPM_WIDTH           = 2,
+      LPM_WIDTHAD         = SIZE,
+      LPM_NUMWORDS        = MAX_ROUNDS,
+      LPM_INDATA          = "REGISTERED",
+      LPM_ADDRESS_CONTROL = "REGISTERED",
+      LPM_OUTDATA         = "UNREGISTERED"
+   );
+
+   -- Ponteiro de escrita: posição onde a próxima cor será gravada
+   write_ptr[SIZE-1..0] : DFF;
+   -- Ponteiro de leitura: posição da cor que o jogador deve acertar agora
+   read_ptr[SIZE-1..0]  : DFF;
 	
 BEGIN
 	DEFAULTS
 		-- fsm_states = IDLE; -- Set FSM how IDLE
-		b = GND;
 		led_out[] = 0;
 		
 		delay[].d = 0;
 		game_round[].d = 1; -- Start round 1
 		temp[].d = 1;		  -- Start round 1
-		
+
 		key0_flag.d = GND;
 		key3_flag.d = GND;
+		--color_led[].d = 0;
+		
+		-- RAM inativa por padrão
+      ram.we        = GND;
 	END DEFAULTS;
 	
 	fsm_states.clk = clock; -- Syncronize clock
@@ -58,31 +86,35 @@ BEGIN
 	
 	game_round[].clk = clock;  -- Syncronize clock
 	game_round[].clrn = reset; -- Reset FSM
-
+	
 	temp[].clk = clock;  -- Syncronize clock
 	temp[].clrn = reset; -- Reset FSM
 	
 	key0_flag.clk = clock; key0_flag.clrn = reset;
 	key3_flag.clk = clock; key3_flag.clrn = reset;
 	
-	IF key0 THEN
-		key0_flag.d = VCC;
-	END IF;
-		
-	IF key3 THEN
-		key3_flag.d = VCC;
-	END IF;
+	write_ptr[].clk  = clock;  write_ptr[].clrn   = reset;
+   read_ptr[].clk   = clock;  read_ptr[].clrn    = reset;
+	ram.inclock = clock;
+	
+	color_led[].clk = clock; color_led[].clrn = reset;	
+	color_led[].d = color_led[].q;
+	
+	IF key0 THEN key0_flag.d = VCC; END IF;
+	IF key3 THEN key3_flag.d = VCC; END IF;
 	
 	CASE fsm_states IS
 		
 		WHEN IDLE =>
 			-- TODO: Show record value (7seg.inc)
-			led_out[] = 0;
 			-- TODO: Clear output tone buzzer
+			led_out[] = 0;
 			
 			game_round[].d = 1;  -- reset game
-			temp[].d = 1;  		-- reset round counter
-			delay[].d = 0; 		-- reset delay counter
+			temp[].d 		= 1;  -- reset round counter
+			delay[].d 		= 0; 	-- reset delay counter
+			write_ptr[].d  = 0;
+			read_ptr[].d   = 0;
 			
 			-- Sequence to start the game (key[0] + key[3])
 			IF (key0_flag.q AND key3_flag.q) OR (NOT key0_raw AND NOT key3_raw) THEN
@@ -95,20 +127,28 @@ BEGIN
 		
 		WHEN START_GAME =>
 			-- TODO: Clear 7seg here (7seg.inc)
-			led_out[] = 0;
 			-- TODO: Clear output tone buzzer
-
+			
 			IF	delay[] < DELAY_500MS THEN -- Wait 0.5s to set the color
 				delay[].d = delay[] + 1;
+				led_out[] = 0;
 			ELSE
 				delay[].d = 0;
+				
+				IF 	random_color[] == B"00" THEN color_led[].d = B"0001";
+				ELSIF random_color[] == B"01" THEN color_led[].d = B"0010";
+				ELSIF random_color[] == B"10" THEN color_led[].d = B"0100";
+				ELSE	   								  color_led[].d = B"1000";
+				END IF;
+				
+				ram.address[] = write_ptr[].q;
+				ram.data[]    = random_color[];
+				ram.we        = VCC;
+				
 				fsm_states = SET_COLOR;
 			END IF;
 			
 		WHEN SET_COLOR =>
-			-- TODO: Get random color
-			-- TODO: Save the Colors IDs
-			-- TODO: Set led output according the color
 			-- TODO: Show the number in 7seg according the color
 			-- TODO: Output tone buzzer according the color
 			fsm_states = WAIT;
@@ -116,56 +156,66 @@ BEGIN
 		WHEN WAIT =>
 			IF delay[] < DELAY_250MS THEN -- wait 0.25s to the next color
 				delay[].d = delay[] + 1;
-				led_out[] = B"0001";
+				led_out[3..0] = color_led[].q;
 				fsm_states = WAIT;
-			ELSE
+			ELSE	
 				delay[].d = 0;
 				
 				IF (temp[] == game_round[]) THEN
+					read_ptr[].d = 0;
 					fsm_states = READ_COLOR;
 				ELSE
 					temp[].d = temp[] + 1; -- increment temp
+					write_ptr[].d = write_ptr[] + 1;
 					fsm_states = START_GAME;
 				END IF;
 			END IF;
 			
 		WHEN READ_COLOR =>
-			-- TODO: Get button input
 			-- TODO: Check if the Colors IDs match with the game
-			-- TODO: IF wrong, jump state, ELSE do the TODOs
-			-- TODO (1): Set led output according the color
 			-- TODO (2): Show the number in 7seg according the color
 			-- TODO (3): Output tone buzzer according the color
 			
-			IF delay[] < DELAY_5S THEN
-				delay[].d = delay[] + 1;
-				
-				IF key0 THEN led_out[] = B"0001"; fsm_states = PLAYER_WIN; delay[].d = 0;
-				ELSIF key1 THEN led_out[] = B"0010";
-				ELSIF key2 THEN led_out[] = B"0100";
-				ELSIF key3 THEN led_out[] = B"1000";
-				ELSE         led_out[] = 0;
+			ram.address[] = read_ptr[].q;
+			ram.we        = GND;
+			
+			IF    key0 THEN led_out[] = B"0001"; 
+			ELSIF key1 THEN led_out[] = B"0010"; 
+			ELSIF key2 THEN led_out[] = B"0100"; 
+			ELSIF key3 THEN led_out[] = B"1000";
+			END IF;
+			
+			IF delay[] < DELAY_5S THEN				
+				IF key0 OR key1 OR key2 OR key3 THEN
+					IF (key0 AND (ram.q[] == B"00")) OR
+						(key1 AND (ram.q[] == B"01")) OR
+						(key2 AND (ram.q[] == B"10")) OR
+						(key3 AND (ram.q[] == B"11")) THEN
+						delay[].d = 0;
+						
+						IF read_ptr[] == (game_round[] - 1) THEN
+							IF game_round[] == MAX_ROUNDS THEN
+								fsm_states = PLAYER_WIN;
+							ELSE
+								color_led[].d = 0;
+								temp[].d = 1;
+								read_ptr[].d = 0;
+								write_ptr[].d = 0;
+								game_round[].d = game_round[] + 1;
+								fsm_states = START_GAME;
+							END IF;
+						ELSE
+							read_ptr[].d = read_ptr[] + 1;
+							fsm_states = READ_COLOR;
+						END IF;
+						
+					ELSE
+						delay[].d = 0;
+						fsm_states = PLAYER_LOSE;
+					END IF;
+				ELSE
+					delay[].d = delay[] + 1;
 				END IF;
-				
-				
-				-- IF GND == VCC THEN 					-- TODO: cor_de_entrada == cor_da_sequencia
-				-- 	-- TODO  (1 & 2 & 3)
-				-- 	-- INVERSE OF TODO (1 & 2 & 3) 		-- create a pulse only
-				-- 	IF VCC == VCC THEN				-- TODO: cor_de_entrada == cor_da_ultima_sequencia
-				-- 		IF game_round[] == MAX_ROUNDS THEN
-				-- 			fsm_states = PLAYER_WIN;
-				-- 		ELSE
-				-- 			temp[].d = 1;
-				-- 			game_round[].d = game_round[] + 1; -- Increment gamee round
-				-- 			fsm_states = START_GAME;
-				-- 		END IF;
-				-- 	END IF;
-				-- 	
-				-- 	delay[].d = 0;
-				-- ELSE
-				-- 	delay[].d = 0;
-				-- 	fsm_states = PLAYER_LOSE;
-				-- END IF;
 			ELSE
 				delay[].d = 0;
 				fsm_states = PLAYER_LOSE;
@@ -173,17 +223,16 @@ BEGIN
 			
 		WHEN PLAYER_WIN =>
 			-- TODO: Show record 7seg (7seg.inc)
-			led_out[] = B"1111";
 			-- TODO: Winner output tone buzzer
+			led_out[] = B"1111";
 			
 			fsm_states = PLAYER_WIN;
 			
 		WHEN PLAYER_LOSE =>
 			-- TODO: CLear 7seg (7seg.inc)
-			led_out[] = 0;
 			-- TODO: Loser output tone buzzer
+			led_out[] = B"0110";
 			
-			b = VCC;
 			fsm_states = PLAYER_LOSE;
 			
 		WHEN OTHERS =>
