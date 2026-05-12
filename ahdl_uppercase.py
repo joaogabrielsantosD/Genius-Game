@@ -11,13 +11,13 @@ import os
 # Palavras-chave da linguagem AHDL
 AHDL_KEYWORDS = {
     # Estruturas de controle
-    "if", "else", "then", "elsif", "end",
+    "if", "else", "then", "elsif", "end", "to",
     # Definição de máquinas de estado
-    "machine", "states", "state", "with",
+    "machine", "states", "state", "with", "parameters", "segments", "title",
     # Lógica combinacional e sequencial
-    "case", "is", "when", "others",
+    "case", "is", "when", "others", "div", "log2", "mod",
     # Declarações de componentes e sinais
-    "subdesign", "variable", "begin",
+    "design", "subdesign", "variable", "begin",
     # Tipos e instâncias
     "input", "output", "bidir",
     "node", "dff", "dffe", "tff", "tffe", "jkff", "jkffe",
@@ -25,12 +25,13 @@ AHDL_KEYWORDS = {
     # Operadores lógicos (forma textual)
     "and", "or", "not", "xor", "xnor", "nand", "nor",
     # Constantes booleanas
-    "vcc", "gnd",
+    "vcc", "gnd", "of",
     # Funções e tabelas
-    "function", "returns", "table",
+    "function", "returns", "table", "define",
     # Outros
-    "for", "generate", "assert", "report", "severity",
-    "constant", "defaults", "clique", "help_id",
+    "for", "generate", "assert", "report", "severity", "connected_pins", "device", "tri_state_node",
+    "constant", "defaults", "clique", "help_id", "bits", "buried", "include", "options",
+    "ceil", "floor",
 }
 
 def uppercase_ahdl_keywords(source: str) -> str:
