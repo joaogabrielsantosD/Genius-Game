@@ -19,7 +19,7 @@ SUBDESIGN top
 	key[3..0] : INPUT;
 	
 	led[3..0] : OUTPUT;
-	buzzer : OUTPUT;
+	buzzer    : OUTPUT;
 )
 
 VARIABLE
@@ -34,8 +34,12 @@ BEGIN
 		buzzer = GND;
 	END DEFAULTS;
 	
-	ASSERT (!MAX_ROUNDS)
+	ASSERT !(MAX_ROUNDS == 0)
 	REPORT "o jogo nao pode ser igual a zero"
+	SEVERITY error;
+	
+	ASSERT !(MAX_ROUNDS > 20)
+	REPORT "o jogo nao pode ser maior que 20"
 	SEVERITY error;
 	
 	-- Random Generator Inputs --

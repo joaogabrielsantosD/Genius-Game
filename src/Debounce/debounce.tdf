@@ -3,7 +3,7 @@ TITLE "Debounce Filter";
 CONSTANT clk_FPGA = 50000000;								  -- Clock frequency of the FPGA in Hz
 CONSTANT freq = 50;											  -- Desired output frequency for the debounce sampling clock (50 Hz)
 CONSTANT overflow_f = CEIL(clk_FPGA DIV (freq * 2)); -- Counter overflow value: number of FPGA clock cycles per half-period of the sampling clock
-CONSTANT n_bits_f = LOG2(overflow_f); 					  -- Number of bits required for the counter to reach overflow_f
+CONSTANT n_bits_f = CEIL(LOG2(overflow_f)); 					  -- Number of bits required for the counter to reach overflow_f
 
 SUBDESIGN debounce
 (
