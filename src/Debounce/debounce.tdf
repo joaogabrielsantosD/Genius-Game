@@ -1,3 +1,5 @@
+-- Authors: João Donato, Matheus Sousa.
+
 TITLE "Debounce Filter";
 
 CONSTANT clk_FPGA = 50000000;								  -- Clock frequency of the FPGA in Hz

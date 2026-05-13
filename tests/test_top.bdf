@@ -41,7 +41,7 @@ https://fpgasoftware.intel.com/eula.
 	(input)
 	(rect 352 296 520 312)
 	(text "INPUT" (rect 125 0 154 10)(font "Arial" (font_size 6)))
-	(text "key[3..0]" (rect 5 0 49 13)(font "Intel Clear" ))
+	(text "key[3..0]" (rect 5 0 50 13)(font "Intel Clear" ))
 	(pt 168 8)
 	(drawing
 		(line (pt 84 12)(pt 109 12))
@@ -58,7 +58,7 @@ https://fpgasoftware.intel.com/eula.
 	(input)
 	(rect 352 264 520 280)
 	(text "INPUT" (rect 125 0 154 10)(font "Arial" (font_size 6)))
-	(text "clock" (rect 5 0 32 11)(font "Arial" ))
+	(text "clock" (rect 5 0 33 11)(font "Arial" ))
 	(pt 168 8)
 	(drawing
 		(line (pt 84 12)(pt 109 12))
@@ -229,14 +229,14 @@ https://fpgasoftware.intel.com/eula.
 		(pt 168 32)
 		(output)
 		(text "led[3..0]" (rect 0 0 40 11)(font "Arial" ))
-		(text "led[3..0]" (rect 114 27 154 38)(font "Arial" ))
+		(text "led[3..0]" (rect 114 27 147 38)(font "Arial" ))
 		(line (pt 168 32)(pt 152 32)(line_width 3))
 	)
 	(port
 		(pt 168 48)
 		(output)
 		(text "beep" (rect 0 0 25 11)(font "Arial" ))
-		(text "beep" (rect 126 43 151 54)(font "Arial" ))
+		(text "beep" (rect 126 43 147 54)(font "Arial" ))
 		(line (pt 168 48)(pt 152 48))
 	)
 	(drawing

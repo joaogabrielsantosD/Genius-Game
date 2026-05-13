@@ -1,5 +1,5 @@
 Analysis & Synthesis report for genius_game
-Wed May  6 11:47:45 2026
+Wed May 13 17:13:46 2026
 Quartus Prime Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
 
 
@@ -13,18 +13,16 @@ Quartus Prime Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
   5. Analysis & Synthesis Source Files Read
   6. Analysis & Synthesis Resource Usage Summary
   7. Analysis & Synthesis Resource Utilization by Entity
-  8. State Machine - |test_top|top:inst1|FSM:game_fsm|fsm_states
-  9. Registers Removed During Synthesis
- 10. Removed Registers Triggering Further Register Optimizations
+  8. Analysis & Synthesis RAM Summary
+  9. State Machine - |top|FSM:game_fsm|fsm_states
+ 10. Registers Removed During Synthesis
  11. General Register Statistics
- 12. Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst9
- 13. Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst13
- 14. Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst20
- 15. Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst10
- 16. Parameter Settings for User Entity Instance: top:inst1|FSM:game_fsm
- 17. Post-Synthesis Netlist Statistics for Top Partition
- 18. Elapsed Time Per Partition
- 19. Analysis & Synthesis Messages
+ 12. Source assignments for FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block|altsyncram_6n71:auto_generated
+ 13. Parameter Settings for User Entity Instance: FSM:game_fsm
+ 14. Parameter Settings for User Entity Instance: FSM:game_fsm|lpm_ram_dq:ram
+ 15. Post-Synthesis Netlist Statistics for Top Partition
+ 16. Elapsed Time Per Partition
+ 17. Analysis & Synthesis Messages
 
 
 
@@ -51,18 +49,18 @@ https://fpgasoftware.intel.com/eula.
 +----------------------------------------------------------------------------------+
 ; Analysis & Synthesis Summary                                                     ;
 +------------------------------------+---------------------------------------------+
-; Analysis & Synthesis Status        ; Successful - Wed May  6 11:47:45 2026       ;
+; Analysis & Synthesis Status        ; Successful - Wed May 13 17:13:46 2026       ;
 ; Quartus Prime Version              ; 20.1.0 Build 711 06/05/2020 SJ Lite Edition ;
 ; Revision Name                      ; genius_game                                 ;
-; Top-level Entity Name              ; test_top                                    ;
+; Top-level Entity Name              ; top                                         ;
 ; Family                             ; Cyclone IV E                                ;
-; Total logic elements               ; 164                                         ;
-;     Total combinational functions  ; 159                                         ;
-;     Dedicated logic registers      ; 103                                         ;
-; Total registers                    ; 103                                         ;
-; Total pins                         ; 11                                          ;
+; Total logic elements               ; 418                                         ;
+;     Total combinational functions  ; 413                                         ;
+;     Dedicated logic registers      ; 240                                         ;
+; Total registers                    ; 240                                         ;
+; Total pins                         ; 23                                          ;
 ; Total virtual pins                 ; 0                                           ;
-; Total memory bits                  ; 0                                           ;
+; Total memory bits                  ; 40                                          ;
 ; Embedded Multiplier 9-bit elements ; 0                                           ;
 ; Total PLLs                         ; 0                                           ;
 +------------------------------------+---------------------------------------------+
@@ -74,7 +72,7 @@ https://fpgasoftware.intel.com/eula.
 ; Option                                                           ; Setting            ; Default Value      ;
 +------------------------------------------------------------------+--------------------+--------------------+
 ; Device                                                           ; EP4CE6E22C8        ;                    ;
-; Top-level entity name                                            ; test_top           ; genius_game        ;
+; Top-level entity name                                            ; top                ; genius_game        ;
 ; Family name                                                      ; Cyclone IV E       ; Cyclone V          ;
 ; Use smart compilation                                            ; Off                ; Off                ;
 ; Enable parallel Assembler and Timing Analyzer during compilation ; On                 ; On                 ;
@@ -172,37 +170,38 @@ https://fpgasoftware.intel.com/eula.
 +----------------------------+-------------+
 
 
-+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Source Files Read                                                                                                                                                      ;
-+----------------------------------+-----------------+------------------------------------+-----------------------------------------------------------------------------------------+---------+
-; File Name with User-Entered Path ; Used in Netlist ; File Type                          ; File Name with Absolute Path                                                            ; Library ;
-+----------------------------------+-----------------+------------------------------------+-----------------------------------------------------------------------------------------+---------+
-; src/PRNG/PRNG.tdf                ; yes             ; User AHDL File                     ; /home/lacri/Genius-Game/src/PRNG/PRNG.tdf                                               ;         ;
-; src/FSM/FSM.tdf                  ; yes             ; User AHDL File                     ; /home/lacri/Genius-Game/src/FSM/FSM.tdf                                                 ;         ;
-; src/Debounce/debounce.tdf        ; yes             ; User AHDL File                     ; /home/lacri/Genius-Game/src/Debounce/debounce.tdf                                       ;         ;
-; src/top.tdf                      ; yes             ; User AHDL File                     ; /home/lacri/Genius-Game/src/top.tdf                                                     ;         ;
-; tests/test_top.bdf               ; yes             ; User Block Diagram/Schematic File  ; /home/lacri/Genius-Game/tests/test_top.bdf                                              ;         ;
-; tests/buzzer.bdf                 ; yes             ; User Block Diagram/Schematic File  ; /home/lacri/Genius-Game/tests/buzzer.bdf                                                ;         ;
-; src/PRNG/PRNG.inc                ; yes             ; Auto-Found AHDL File               ; /home/lacri/Genius-Game/src/PRNG/PRNG.inc                                               ;         ;
-; src/Debounce/debounce.inc        ; yes             ; Auto-Found AHDL File               ; /home/lacri/Genius-Game/src/Debounce/debounce.inc                                       ;         ;
-; src/FSM/FSM.inc                  ; yes             ; Auto-Found AHDL File               ; /home/lacri/Genius-Game/src/FSM/FSM.inc                                                 ;         ;
-; lpm_counter.tdf                  ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_counter.tdf         ;         ;
-; lpm_constant.inc                 ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_constant.inc        ;         ;
-; lpm_decode.inc                   ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_decode.inc          ;         ;
-; lpm_add_sub.inc                  ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_add_sub.inc         ;         ;
-; cmpconst.inc                     ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/cmpconst.inc            ;         ;
-; lpm_compare.inc                  ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_compare.inc         ;         ;
-; lpm_counter.inc                  ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_counter.inc         ;         ;
-; dffeea.inc                       ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/dffeea.inc              ;         ;
-; alt_counter_stratix.inc          ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/alt_counter_stratix.inc ;         ;
-; aglobal201.inc                   ; yes             ; Megafunction                       ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/aglobal201.inc          ;         ;
-; db/cntr_t9k.tdf                  ; yes             ; Auto-Generated Megafunction        ; /home/lacri/Genius-Game/db/cntr_t9k.tdf                                                 ;         ;
-; db/cmpr_dic.tdf                  ; yes             ; Auto-Generated Megafunction        ; /home/lacri/Genius-Game/db/cmpr_dic.tdf                                                 ;         ;
-; db/cntr_onk.tdf                  ; yes             ; Auto-Generated Megafunction        ; /home/lacri/Genius-Game/db/cntr_onk.tdf                                                 ;         ;
-; db/cmpr_cic.tdf                  ; yes             ; Auto-Generated Megafunction        ; /home/lacri/Genius-Game/db/cmpr_cic.tdf                                                 ;         ;
-; db/cntr_qnk.tdf                  ; yes             ; Auto-Generated Megafunction        ; /home/lacri/Genius-Game/db/cntr_qnk.tdf                                                 ;         ;
-; db/cntr_pnk.tdf                  ; yes             ; Auto-Generated Megafunction        ; /home/lacri/Genius-Game/db/cntr_pnk.tdf                                                 ;         ;
-+----------------------------------+-----------------+------------------------------------+-----------------------------------------------------------------------------------------+---------+
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Source Files Read                                                                                                                                              ;
++----------------------------------+-----------------+------------------------------+---------------------------------------------------------------------------------------+---------+
+; File Name with User-Entered Path ; Used in Netlist ; File Type                    ; File Name with Absolute Path                                                          ; Library ;
++----------------------------------+-----------------+------------------------------+---------------------------------------------------------------------------------------+---------+
+; src/SevenSeg/sevenseg.tdf        ; yes             ; User AHDL File               ; /home/lacri/Downloads/Genius-Game-feat-colors/src/SevenSeg/sevenseg.tdf               ;         ;
+; src/FSM/FSM.tdf                  ; yes             ; User AHDL File               ; /home/lacri/Downloads/Genius-Game-feat-colors/src/FSM/FSM.tdf                         ;         ;
+; src/Debounce/debounce.tdf        ; yes             ; User AHDL File               ; /home/lacri/Downloads/Genius-Game-feat-colors/src/Debounce/debounce.tdf               ;         ;
+; src/top.tdf                      ; yes             ; User AHDL File               ; /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf                             ;         ;
+; src/PRNG/prng.tdf                ; yes             ; User AHDL File               ; /home/lacri/Downloads/Genius-Game-feat-colors/src/PRNG/prng.tdf                       ;         ;
+; src/Buzzer/beep.tdf              ; yes             ; User AHDL File               ; /home/lacri/Downloads/Genius-Game-feat-colors/src/Buzzer/beep.tdf                     ;         ;
+; lpm_ram_dq.inc                   ; yes             ; Auto-Found AHDL File         ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_ram_dq.inc        ;         ;
+; src/Debounce/debounce.inc        ; yes             ; Auto-Found AHDL File         ; /home/lacri/Downloads/Genius-Game-feat-colors/src/Debounce/debounce.inc               ;         ;
+; src/Buzzer/beep.inc              ; yes             ; Auto-Found AHDL File         ; /home/lacri/Downloads/Genius-Game-feat-colors/src/Buzzer/beep.inc                     ;         ;
+; src/PRNG/PRNG.inc                ; yes             ; Auto-Found AHDL File         ; /home/lacri/Downloads/Genius-Game-feat-colors/src/PRNG/PRNG.inc                       ;         ;
+; src/FSM/FSM.inc                  ; yes             ; Auto-Found AHDL File         ; /home/lacri/Downloads/Genius-Game-feat-colors/src/FSM/FSM.inc                         ;         ;
+; src/SevenSeg/sevenseg.inc        ; yes             ; Auto-Found AHDL File         ; /home/lacri/Downloads/Genius-Game-feat-colors/src/SevenSeg/sevenseg.inc               ;         ;
+; lpm_ram_dq.tdf                   ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_ram_dq.tdf        ;         ;
+; altram.inc                       ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altram.inc            ;         ;
+; lpm_mux.inc                      ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_mux.inc           ;         ;
+; lpm_decode.inc                   ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_decode.inc        ;         ;
+; aglobal201.inc                   ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/aglobal201.inc        ;         ;
+; altram.tdf                       ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altram.tdf            ;         ;
+; memmodes.inc                     ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/others/maxplus2/memmodes.inc        ;         ;
+; altsyncram.inc                   ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altsyncram.inc        ;         ;
+; altsyncram.tdf                   ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altsyncram.tdf        ;         ;
+; stratix_ram_block.inc            ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/stratix_ram_block.inc ;         ;
+; a_rdenreg.inc                    ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/a_rdenreg.inc         ;         ;
+; altrom.inc                       ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altrom.inc            ;         ;
+; altdpram.inc                     ; yes             ; Megafunction                 ; /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altdpram.inc          ;         ;
+; db/altsyncram_6n71.tdf           ; yes             ; Auto-Generated Megafunction  ; /home/lacri/Downloads/Genius-Game-feat-colors/db/altsyncram_6n71.tdf                  ;         ;
++----------------------------------+-----------------+------------------------------+---------------------------------------------------------------------------------------+---------+
 
 
 +-----------------------------------------------------------+
@@ -210,170 +209,153 @@ https://fpgasoftware.intel.com/eula.
 +---------------------------------------------+-------------+
 ; Resource                                    ; Usage       ;
 +---------------------------------------------+-------------+
-; Estimated Total logic elements              ; 164         ;
+; Estimated Total logic elements              ; 418         ;
 ;                                             ;             ;
-; Total combinational functions               ; 159         ;
+; Total combinational functions               ; 413         ;
 ; Logic element usage by number of LUT inputs ;             ;
-;     -- 4 input functions                    ; 47          ;
-;     -- 3 input functions                    ; 18          ;
-;     -- <=2 input functions                  ; 94          ;
+;     -- 4 input functions                    ; 141         ;
+;     -- 3 input functions                    ; 70          ;
+;     -- <=2 input functions                  ; 202         ;
 ;                                             ;             ;
 ; Logic elements by mode                      ;             ;
-;     -- normal mode                          ; 91          ;
-;     -- arithmetic mode                      ; 68          ;
+;     -- normal mode                          ; 250         ;
+;     -- arithmetic mode                      ; 163         ;
 ;                                             ;             ;
-; Total registers                             ; 103         ;
-;     -- Dedicated logic registers            ; 103         ;
+; Total registers                             ; 240         ;
+;     -- Dedicated logic registers            ; 240         ;
 ;     -- I/O registers                        ; 0           ;
 ;                                             ;             ;
-; I/O pins                                    ; 11          ;
+; I/O pins                                    ; 23          ;
+; Total memory bits                           ; 40          ;
 ;                                             ;             ;
 ; Embedded Multiplier 9-bit elements          ; 0           ;
 ;                                             ;             ;
 ; Maximum fan-out node                        ; clock~input ;
-; Maximum fan-out                             ; 95          ;
-; Total fan-out                               ; 796         ;
-; Average fan-out                             ; 2.80        ;
+; Maximum fan-out                             ; 234         ;
+; Total fan-out                               ; 1935        ;
+; Average fan-out                             ; 2.76        ;
 +---------------------------------------------+-------------+
 
 
-+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                         ;
-+------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+--------------------------------------------------------------------------------+-------------+--------------+
-; Compilation Hierarchy Node         ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                            ; Entity Name ; Library Name ;
-+------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+--------------------------------------------------------------------------------+-------------+--------------+
-; |test_top                          ; 159 (1)             ; 103 (0)                   ; 0           ; 0            ; 0       ; 0         ; 11   ; 0            ; |test_top                                                                      ; test_top    ; work         ;
-;    |buzzer:inst|                   ; 24 (1)              ; 17 (1)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|buzzer:inst                                                          ; buzzer      ; work         ;
-;       |lpm_counter:inst9|          ; 23 (0)              ; 16 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|buzzer:inst|lpm_counter:inst9                                        ; lpm_counter ; work         ;
-;          |cntr_t9k:auto_generated| ; 23 (18)             ; 16 (16)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|buzzer:inst|lpm_counter:inst9|cntr_t9k:auto_generated                ; cntr_t9k    ; work         ;
-;             |cmpr_dic:cmpr1|       ; 5 (5)               ; 0 (0)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|buzzer:inst|lpm_counter:inst9|cntr_t9k:auto_generated|cmpr_dic:cmpr1 ; cmpr_dic    ; work         ;
-;    |top:inst1|                     ; 134 (0)             ; 86 (0)                    ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1                                                            ; top         ; work         ;
-;       |FSM:game_fsm|               ; 99 (92)             ; 54 (49)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1|FSM:game_fsm                                               ; FSM         ; work         ;
-;          |PRNG:rng|                ; 7 (7)               ; 5 (5)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1|FSM:game_fsm|PRNG:rng                                      ; PRNG        ; work         ;
-;       |debounce:key0|              ; 28 (28)             ; 23 (23)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1|debounce:key0                                              ; debounce    ; work         ;
-;       |debounce:key1|              ; 2 (2)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1|debounce:key1                                              ; debounce    ; work         ;
-;       |debounce:key2|              ; 2 (2)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1|debounce:key2                                              ; debounce    ; work         ;
-;       |debounce:key3|              ; 3 (3)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |test_top|top:inst1|debounce:key3                                              ; debounce    ; work         ;
-+------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+--------------------------------------------------------------------------------+-------------+--------------+
++----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis Resource Utilization by Entity                                                                                                                                                                                                                                                            ;
++-------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+--------------------------------------------------------------------------------------------------+-----------------+--------------+
+; Compilation Hierarchy Node                      ; Combinational ALUTs ; Dedicated Logic Registers ; Memory Bits ; DSP Elements ; DSP 9x9 ; DSP 18x18 ; Pins ; Virtual Pins ; Full Hierarchy Name                                                                              ; Entity Name     ; Library Name ;
++-------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+--------------------------------------------------------------------------------------------------+-----------------+--------------+
+; |top                                            ; 413 (0)             ; 240 (0)                   ; 40          ; 0            ; 0       ; 0         ; 23   ; 0            ; |top                                                                                             ; top             ; work         ;
+;    |FSM:game_fsm|                               ; 183 (183)           ; 64 (64)                   ; 40          ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|FSM:game_fsm                                                                                ; FSM             ; work         ;
+;       |lpm_ram_dq:ram|                          ; 0 (0)               ; 0 (0)                     ; 40          ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|FSM:game_fsm|lpm_ram_dq:ram                                                                 ; lpm_ram_dq      ; work         ;
+;          |altram:sram|                          ; 0 (0)               ; 0 (0)                     ; 40          ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|FSM:game_fsm|lpm_ram_dq:ram|altram:sram                                                     ; altram          ; work         ;
+;             |altsyncram:ram_block|              ; 0 (0)               ; 0 (0)                     ; 40          ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block                                ; altsyncram      ; work         ;
+;                |altsyncram_6n71:auto_generated| ; 0 (0)               ; 0 (0)                     ; 40          ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block|altsyncram_6n71:auto_generated ; altsyncram_6n71 ; work         ;
+;    |PRNG:rng|                                   ; 20 (20)             ; 21 (21)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|PRNG:rng                                                                                    ; PRNG            ; work         ;
+;    |beep:b|                                     ; 141 (141)           ; 107 (107)                 ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|beep:b                                                                                      ; beep            ; work         ;
+;    |debounce:key0|                              ; 27 (27)             ; 23 (23)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|debounce:key0                                                                               ; debounce        ; work         ;
+;    |debounce:key1|                              ; 2 (2)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|debounce:key1                                                                               ; debounce        ; work         ;
+;    |debounce:key2|                              ; 2 (2)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|debounce:key2                                                                               ; debounce        ; work         ;
+;    |debounce:key3|                              ; 2 (2)               ; 3 (3)                     ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|debounce:key3                                                                               ; debounce        ; work         ;
+;    |sevenseg:display|                           ; 36 (36)             ; 16 (16)                   ; 0           ; 0            ; 0       ; 0         ; 0    ; 0            ; |top|sevenseg:display                                                                            ; sevenseg        ; work         ;
++-------------------------------------------------+---------------------+---------------------------+-------------+--------------+---------+-----------+------+--------------+--------------------------------------------------------------------------------------------------+-----------------+--------------+
 Note: For table entries with two numbers listed, the numbers in parentheses indicate the number of resources of the given type used by the specific entity alone. The numbers listed outside of parentheses indicate the total resources of the given type used by the specific entity and all of its sub-entities in the hierarchy.
 
 
++-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+; Analysis & Synthesis RAM Summary                                                                                                                                                                      ;
++--------------------------------------------------------------------------------------------------------+------+-------------+--------------+--------------+--------------+--------------+------+------+
+; Name                                                                                                   ; Type ; Mode        ; Port A Depth ; Port A Width ; Port B Depth ; Port B Width ; Size ; MIF  ;
++--------------------------------------------------------------------------------------------------------+------+-------------+--------------+--------------+--------------+--------------+------+------+
+; FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block|altsyncram_6n71:auto_generated|ALTSYNCRAM ; AUTO ; Single Port ; 20           ; 2            ; --           ; --           ; 40   ; None ;
++--------------------------------------------------------------------------------------------------------+------+-------------+--------------+--------------+--------------+--------------+------+------+
+
+
 Encoding Type:  One-Hot
-+--------------------------------------------------------------------------------------------+
-; State Machine - |test_top|top:inst1|FSM:game_fsm|fsm_states                                ;
-+-------------+-------------+------------+------------+------+-----------+------------+------+
-; Name        ; PLAYER_LOSE ; PLAYER_WIN ; READ_COLOR ; WAIT ; SET_COLOR ; START_GAME ; IDLE ;
-+-------------+-------------+------------+------------+------+-----------+------------+------+
-; IDLE        ; 0           ; 0          ; 0          ; 0    ; 0         ; 0          ; 0    ;
-; START_GAME  ; 0           ; 0          ; 0          ; 0    ; 0         ; 1          ; 1    ;
-; SET_COLOR   ; 0           ; 0          ; 0          ; 0    ; 1         ; 0          ; 1    ;
-; WAIT        ; 0           ; 0          ; 0          ; 1    ; 0         ; 0          ; 1    ;
-; READ_COLOR  ; 0           ; 0          ; 1          ; 0    ; 0         ; 0          ; 1    ;
-; PLAYER_WIN  ; 0           ; 1          ; 0          ; 0    ; 0         ; 0          ; 1    ;
-; PLAYER_LOSE ; 1           ; 0          ; 0          ; 0    ; 0         ; 0          ; 1    ;
-+-------------+-------------+------------+------------+------+-----------+------------+------+
++-------------------------------------------------------------------------------------------------------+
+; State Machine - |top|FSM:game_fsm|fsm_states                                                          ;
++---------------+-------------+------------+------------+-----------+---------------+------------+------+
+; Name          ; PLAYER_LOSE ; PLAYER_WIN ; READ_COLOR ; SET_COLOR ; SHOW_SEQUENCE ; START_GAME ; IDLE ;
++---------------+-------------+------------+------------+-----------+---------------+------------+------+
+; IDLE          ; 0           ; 0          ; 0          ; 0         ; 0             ; 0          ; 0    ;
+; START_GAME    ; 0           ; 0          ; 0          ; 0         ; 0             ; 1          ; 1    ;
+; SHOW_SEQUENCE ; 0           ; 0          ; 0          ; 0         ; 1             ; 0          ; 1    ;
+; SET_COLOR     ; 0           ; 0          ; 0          ; 1         ; 0             ; 0          ; 1    ;
+; READ_COLOR    ; 0           ; 0          ; 1          ; 0         ; 0             ; 0          ; 1    ;
+; PLAYER_WIN    ; 0           ; 1          ; 0          ; 0         ; 0             ; 0          ; 1    ;
+; PLAYER_LOSE   ; 1           ; 0          ; 0          ; 0         ; 0             ; 0          ; 1    ;
++---------------+-------------+------------+------------+-----------+---------------+------------+------+
 
 
-+-----------------------------------------------------------------------------------------------------------------------------+
-; Registers Removed During Synthesis                                                                                          ;
-+-------------------------------------------------------------------------------+---------------------------------------------+
-; Register name                                                                 ; Reason for Removal                          ;
-+-------------------------------------------------------------------------------+---------------------------------------------+
-; top:inst1|FSM:game_fsm|game_round[1..4]                                       ; Stuck at GND due to stuck port data_in      ;
-; buzzer:inst|lpm_counter:inst10|cntr_pnk:auto_generated|counter_reg_bit[0..15] ; Stuck at GND due to stuck port clear        ;
-; buzzer:inst|lpm_counter:inst20|cntr_qnk:auto_generated|counter_reg_bit[0..15] ; Stuck at GND due to stuck port clear        ;
-; buzzer:inst|lpm_counter:inst13|cntr_onk:auto_generated|counter_reg_bit[0..14] ; Stuck at GND due to stuck port clear        ;
-; buzzer:inst|inst2                                                             ; Merged with buzzer:inst|inst16              ;
-; buzzer:inst|inst19                                                            ; Merged with buzzer:inst|inst16              ;
-; top:inst1|debounce:key1|cnt[19]                                               ; Merged with top:inst1|debounce:key0|cnt[19] ;
-; top:inst1|debounce:key2|cnt[19]                                               ; Merged with top:inst1|debounce:key0|cnt[19] ;
-; top:inst1|debounce:key3|cnt[19]                                               ; Merged with top:inst1|debounce:key0|cnt[19] ;
-; top:inst1|debounce:key1|cnt[18]                                               ; Merged with top:inst1|debounce:key0|cnt[18] ;
-; top:inst1|debounce:key2|cnt[18]                                               ; Merged with top:inst1|debounce:key0|cnt[18] ;
-; top:inst1|debounce:key3|cnt[18]                                               ; Merged with top:inst1|debounce:key0|cnt[18] ;
-; top:inst1|debounce:key1|cnt[17]                                               ; Merged with top:inst1|debounce:key0|cnt[17] ;
-; top:inst1|debounce:key2|cnt[17]                                               ; Merged with top:inst1|debounce:key0|cnt[17] ;
-; top:inst1|debounce:key3|cnt[17]                                               ; Merged with top:inst1|debounce:key0|cnt[17] ;
-; top:inst1|debounce:key1|cnt[16]                                               ; Merged with top:inst1|debounce:key0|cnt[16] ;
-; top:inst1|debounce:key2|cnt[16]                                               ; Merged with top:inst1|debounce:key0|cnt[16] ;
-; top:inst1|debounce:key3|cnt[16]                                               ; Merged with top:inst1|debounce:key0|cnt[16] ;
-; top:inst1|debounce:key1|cnt[15]                                               ; Merged with top:inst1|debounce:key0|cnt[15] ;
-; top:inst1|debounce:key2|cnt[15]                                               ; Merged with top:inst1|debounce:key0|cnt[15] ;
-; top:inst1|debounce:key3|cnt[15]                                               ; Merged with top:inst1|debounce:key0|cnt[15] ;
-; top:inst1|debounce:key1|cnt[14]                                               ; Merged with top:inst1|debounce:key0|cnt[14] ;
-; top:inst1|debounce:key2|cnt[14]                                               ; Merged with top:inst1|debounce:key0|cnt[14] ;
-; top:inst1|debounce:key3|cnt[14]                                               ; Merged with top:inst1|debounce:key0|cnt[14] ;
-; top:inst1|debounce:key1|cnt[13]                                               ; Merged with top:inst1|debounce:key0|cnt[13] ;
-; top:inst1|debounce:key2|cnt[13]                                               ; Merged with top:inst1|debounce:key0|cnt[13] ;
-; top:inst1|debounce:key3|cnt[13]                                               ; Merged with top:inst1|debounce:key0|cnt[13] ;
-; top:inst1|debounce:key1|cnt[12]                                               ; Merged with top:inst1|debounce:key0|cnt[12] ;
-; top:inst1|debounce:key2|cnt[12]                                               ; Merged with top:inst1|debounce:key0|cnt[12] ;
-; top:inst1|debounce:key3|cnt[12]                                               ; Merged with top:inst1|debounce:key0|cnt[12] ;
-; top:inst1|debounce:key1|cnt[11]                                               ; Merged with top:inst1|debounce:key0|cnt[11] ;
-; top:inst1|debounce:key2|cnt[11]                                               ; Merged with top:inst1|debounce:key0|cnt[11] ;
-; top:inst1|debounce:key3|cnt[11]                                               ; Merged with top:inst1|debounce:key0|cnt[11] ;
-; top:inst1|debounce:key1|cnt[10]                                               ; Merged with top:inst1|debounce:key0|cnt[10] ;
-; top:inst1|debounce:key2|cnt[10]                                               ; Merged with top:inst1|debounce:key0|cnt[10] ;
-; top:inst1|debounce:key3|cnt[10]                                               ; Merged with top:inst1|debounce:key0|cnt[10] ;
-; top:inst1|debounce:key1|cnt[9]                                                ; Merged with top:inst1|debounce:key0|cnt[9]  ;
-; top:inst1|debounce:key2|cnt[9]                                                ; Merged with top:inst1|debounce:key0|cnt[9]  ;
-; top:inst1|debounce:key3|cnt[9]                                                ; Merged with top:inst1|debounce:key0|cnt[9]  ;
-; top:inst1|debounce:key1|cnt[8]                                                ; Merged with top:inst1|debounce:key0|cnt[8]  ;
-; top:inst1|debounce:key2|cnt[8]                                                ; Merged with top:inst1|debounce:key0|cnt[8]  ;
-; top:inst1|debounce:key3|cnt[8]                                                ; Merged with top:inst1|debounce:key0|cnt[8]  ;
-; top:inst1|debounce:key1|cnt[7]                                                ; Merged with top:inst1|debounce:key0|cnt[7]  ;
-; top:inst1|debounce:key2|cnt[7]                                                ; Merged with top:inst1|debounce:key0|cnt[7]  ;
-; top:inst1|debounce:key3|cnt[7]                                                ; Merged with top:inst1|debounce:key0|cnt[7]  ;
-; top:inst1|debounce:key1|cnt[6]                                                ; Merged with top:inst1|debounce:key0|cnt[6]  ;
-; top:inst1|debounce:key2|cnt[6]                                                ; Merged with top:inst1|debounce:key0|cnt[6]  ;
-; top:inst1|debounce:key3|cnt[6]                                                ; Merged with top:inst1|debounce:key0|cnt[6]  ;
-; top:inst1|debounce:key1|cnt[5]                                                ; Merged with top:inst1|debounce:key0|cnt[5]  ;
-; top:inst1|debounce:key2|cnt[5]                                                ; Merged with top:inst1|debounce:key0|cnt[5]  ;
-; top:inst1|debounce:key3|cnt[5]                                                ; Merged with top:inst1|debounce:key0|cnt[5]  ;
-; top:inst1|debounce:key1|cnt[4]                                                ; Merged with top:inst1|debounce:key0|cnt[4]  ;
-; top:inst1|debounce:key2|cnt[4]                                                ; Merged with top:inst1|debounce:key0|cnt[4]  ;
-; top:inst1|debounce:key3|cnt[4]                                                ; Merged with top:inst1|debounce:key0|cnt[4]  ;
-; top:inst1|debounce:key1|cnt[3]                                                ; Merged with top:inst1|debounce:key0|cnt[3]  ;
-; top:inst1|debounce:key2|cnt[3]                                                ; Merged with top:inst1|debounce:key0|cnt[3]  ;
-; top:inst1|debounce:key3|cnt[3]                                                ; Merged with top:inst1|debounce:key0|cnt[3]  ;
-; top:inst1|debounce:key1|cnt[2]                                                ; Merged with top:inst1|debounce:key0|cnt[2]  ;
-; top:inst1|debounce:key2|cnt[2]                                                ; Merged with top:inst1|debounce:key0|cnt[2]  ;
-; top:inst1|debounce:key3|cnt[2]                                                ; Merged with top:inst1|debounce:key0|cnt[2]  ;
-; top:inst1|debounce:key1|cnt[1]                                                ; Merged with top:inst1|debounce:key0|cnt[1]  ;
-; top:inst1|debounce:key2|cnt[1]                                                ; Merged with top:inst1|debounce:key0|cnt[1]  ;
-; top:inst1|debounce:key3|cnt[1]                                                ; Merged with top:inst1|debounce:key0|cnt[1]  ;
-; top:inst1|debounce:key1|cnt[0]                                                ; Merged with top:inst1|debounce:key0|cnt[0]  ;
-; top:inst1|debounce:key2|cnt[0]                                                ; Merged with top:inst1|debounce:key0|cnt[0]  ;
-; top:inst1|debounce:key3|cnt[0]                                                ; Merged with top:inst1|debounce:key0|cnt[0]  ;
-; buzzer:inst|inst16                                                            ; Stuck at GND due to stuck port data_in      ;
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[7]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|xn[7]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[6]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|xn[6]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[5]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|xn[5]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[4]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|xn[4]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[3]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|xn[3]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[2]                                         ; Lost fanout                                 ;
-; top:inst1|FSM:game_fsm|PRNG:rng|xn[2]                                         ; Lost fanout                                 ;
-; Total Number of Removed Registers = 126                                       ;                                             ;
-+-------------------------------------------------------------------------------+---------------------------------------------+
-
-
-+--------------------------------------------------------------------------------------------------------------------------------------------+
-; Removed Registers Triggering Further Register Optimizations                                                                                ;
-+---------------------------------------+--------------------+-------------------------------------------------------------------------------+
-; Register name                         ; Reason for Removal ; Registers Removed due to This Register                                        ;
-+---------------------------------------+--------------------+-------------------------------------------------------------------------------+
-; top:inst1|FSM:game_fsm|PRNG:rng|yn[7] ; Lost Fanouts       ; top:inst1|FSM:game_fsm|PRNG:rng|xn[7], top:inst1|FSM:game_fsm|PRNG:rng|yn[6], ;
-;                                       ;                    ; top:inst1|FSM:game_fsm|PRNG:rng|xn[6], top:inst1|FSM:game_fsm|PRNG:rng|yn[5], ;
-;                                       ;                    ; top:inst1|FSM:game_fsm|PRNG:rng|xn[5], top:inst1|FSM:game_fsm|PRNG:rng|yn[4], ;
-;                                       ;                    ; top:inst1|FSM:game_fsm|PRNG:rng|xn[4], top:inst1|FSM:game_fsm|PRNG:rng|yn[3], ;
-;                                       ;                    ; top:inst1|FSM:game_fsm|PRNG:rng|xn[3], top:inst1|FSM:game_fsm|PRNG:rng|yn[2], ;
-;                                       ;                    ; top:inst1|FSM:game_fsm|PRNG:rng|xn[2]                                         ;
-+---------------------------------------+--------------------+-------------------------------------------------------------------------------+
++---------------------------------------------------------------------------------+
+; Registers Removed During Synthesis                                              ;
++----------------------------------------+----------------------------------------+
+; Register name                          ; Reason for Removal                     ;
++----------------------------------------+----------------------------------------+
+; FSM:game_fsm|write_ptr[4]              ; Merged with FSM:game_fsm|game_round[4] ;
+; FSM:game_fsm|write_ptr[3]              ; Merged with FSM:game_fsm|game_round[3] ;
+; FSM:game_fsm|write_ptr[2]              ; Merged with FSM:game_fsm|game_round[2] ;
+; FSM:game_fsm|write_ptr[1]              ; Merged with FSM:game_fsm|game_round[1] ;
+; FSM:game_fsm|write_ptr[0]              ; Merged with FSM:game_fsm|game_round[0] ;
+; debounce:key1|cnt[19]                  ; Merged with debounce:key0|cnt[19]      ;
+; debounce:key2|cnt[19]                  ; Merged with debounce:key0|cnt[19]      ;
+; debounce:key3|cnt[19]                  ; Merged with debounce:key0|cnt[19]      ;
+; debounce:key1|cnt[18]                  ; Merged with debounce:key0|cnt[18]      ;
+; debounce:key2|cnt[18]                  ; Merged with debounce:key0|cnt[18]      ;
+; debounce:key3|cnt[18]                  ; Merged with debounce:key0|cnt[18]      ;
+; debounce:key1|cnt[17]                  ; Merged with debounce:key0|cnt[17]      ;
+; debounce:key2|cnt[17]                  ; Merged with debounce:key0|cnt[17]      ;
+; debounce:key3|cnt[17]                  ; Merged with debounce:key0|cnt[17]      ;
+; debounce:key1|cnt[16]                  ; Merged with debounce:key0|cnt[16]      ;
+; debounce:key2|cnt[16]                  ; Merged with debounce:key0|cnt[16]      ;
+; debounce:key3|cnt[16]                  ; Merged with debounce:key0|cnt[16]      ;
+; debounce:key1|cnt[15]                  ; Merged with debounce:key0|cnt[15]      ;
+; debounce:key2|cnt[15]                  ; Merged with debounce:key0|cnt[15]      ;
+; debounce:key3|cnt[15]                  ; Merged with debounce:key0|cnt[15]      ;
+; debounce:key1|cnt[14]                  ; Merged with debounce:key0|cnt[14]      ;
+; debounce:key2|cnt[14]                  ; Merged with debounce:key0|cnt[14]      ;
+; debounce:key3|cnt[14]                  ; Merged with debounce:key0|cnt[14]      ;
+; debounce:key1|cnt[13]                  ; Merged with debounce:key0|cnt[13]      ;
+; debounce:key2|cnt[13]                  ; Merged with debounce:key0|cnt[13]      ;
+; debounce:key3|cnt[13]                  ; Merged with debounce:key0|cnt[13]      ;
+; debounce:key1|cnt[12]                  ; Merged with debounce:key0|cnt[12]      ;
+; debounce:key2|cnt[12]                  ; Merged with debounce:key0|cnt[12]      ;
+; debounce:key3|cnt[12]                  ; Merged with debounce:key0|cnt[12]      ;
+; debounce:key1|cnt[11]                  ; Merged with debounce:key0|cnt[11]      ;
+; debounce:key2|cnt[11]                  ; Merged with debounce:key0|cnt[11]      ;
+; debounce:key3|cnt[11]                  ; Merged with debounce:key0|cnt[11]      ;
+; debounce:key1|cnt[10]                  ; Merged with debounce:key0|cnt[10]      ;
+; debounce:key2|cnt[10]                  ; Merged with debounce:key0|cnt[10]      ;
+; debounce:key3|cnt[10]                  ; Merged with debounce:key0|cnt[10]      ;
+; debounce:key1|cnt[9]                   ; Merged with debounce:key0|cnt[9]       ;
+; debounce:key2|cnt[9]                   ; Merged with debounce:key0|cnt[9]       ;
+; debounce:key3|cnt[9]                   ; Merged with debounce:key0|cnt[9]       ;
+; debounce:key1|cnt[8]                   ; Merged with debounce:key0|cnt[8]       ;
+; debounce:key2|cnt[8]                   ; Merged with debounce:key0|cnt[8]       ;
+; debounce:key3|cnt[8]                   ; Merged with debounce:key0|cnt[8]       ;
+; debounce:key1|cnt[7]                   ; Merged with debounce:key0|cnt[7]       ;
+; debounce:key2|cnt[7]                   ; Merged with debounce:key0|cnt[7]       ;
+; debounce:key3|cnt[7]                   ; Merged with debounce:key0|cnt[7]       ;
+; debounce:key1|cnt[6]                   ; Merged with debounce:key0|cnt[6]       ;
+; debounce:key2|cnt[6]                   ; Merged with debounce:key0|cnt[6]       ;
+; debounce:key3|cnt[6]                   ; Merged with debounce:key0|cnt[6]       ;
+; debounce:key1|cnt[5]                   ; Merged with debounce:key0|cnt[5]       ;
+; debounce:key2|cnt[5]                   ; Merged with debounce:key0|cnt[5]       ;
+; debounce:key3|cnt[5]                   ; Merged with debounce:key0|cnt[5]       ;
+; debounce:key1|cnt[4]                   ; Merged with debounce:key0|cnt[4]       ;
+; debounce:key2|cnt[4]                   ; Merged with debounce:key0|cnt[4]       ;
+; debounce:key3|cnt[4]                   ; Merged with debounce:key0|cnt[4]       ;
+; debounce:key1|cnt[3]                   ; Merged with debounce:key0|cnt[3]       ;
+; debounce:key2|cnt[3]                   ; Merged with debounce:key0|cnt[3]       ;
+; debounce:key3|cnt[3]                   ; Merged with debounce:key0|cnt[3]       ;
+; debounce:key1|cnt[2]                   ; Merged with debounce:key0|cnt[2]       ;
+; debounce:key2|cnt[2]                   ; Merged with debounce:key0|cnt[2]       ;
+; debounce:key3|cnt[2]                   ; Merged with debounce:key0|cnt[2]       ;
+; debounce:key1|cnt[1]                   ; Merged with debounce:key0|cnt[1]       ;
+; debounce:key2|cnt[1]                   ; Merged with debounce:key0|cnt[1]       ;
+; debounce:key3|cnt[1]                   ; Merged with debounce:key0|cnt[1]       ;
+; debounce:key1|cnt[0]                   ; Merged with debounce:key0|cnt[0]       ;
+; debounce:key2|cnt[0]                   ; Merged with debounce:key0|cnt[0]       ;
+; debounce:key3|cnt[0]                   ; Merged with debounce:key0|cnt[0]       ;
+; Total Number of Removed Registers = 65 ;                                        ;
++----------------------------------------+----------------------------------------+
 
 
 +------------------------------------------------------+
@@ -381,132 +363,56 @@ Encoding Type:  One-Hot
 +----------------------------------------------+-------+
 ; Statistic                                    ; Value ;
 +----------------------------------------------+-------+
-; Total registers                              ; 103   ;
-; Number of registers using Synchronous Clear  ; 54    ;
-; Number of registers using Synchronous Load   ; 16    ;
-; Number of registers using Asynchronous Clear ; 54    ;
+; Total registers                              ; 240   ;
+; Number of registers using Synchronous Clear  ; 150   ;
+; Number of registers using Synchronous Load   ; 4     ;
+; Number of registers using Asynchronous Clear ; 85    ;
 ; Number of registers using Asynchronous Load  ; 0     ;
-; Number of registers using Clock Enable       ; 20    ;
+; Number of registers using Clock Enable       ; 4     ;
 ; Number of registers using Preset             ; 0     ;
 +----------------------------------------------+-------+
 
 
-+----------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst9 ;
-+------------------------+-------------------+-------------------------------+
-; Parameter Name         ; Value             ; Type                          ;
-+------------------------+-------------------+-------------------------------+
-; AUTO_CARRY_CHAINS      ; ON                ; AUTO_CARRY                    ;
-; IGNORE_CARRY_BUFFERS   ; OFF               ; IGNORE_CARRY                  ;
-; AUTO_CASCADE_CHAINS    ; ON                ; AUTO_CASCADE                  ;
-; IGNORE_CASCADE_BUFFERS ; OFF               ; IGNORE_CASCADE                ;
-; LPM_WIDTH              ; 16                ; Untyped                       ;
-; LPM_DIRECTION          ; UP                ; Untyped                       ;
-; LPM_MODULUS            ; 57000             ; Untyped                       ;
-; LPM_AVALUE             ; UNUSED            ; Untyped                       ;
-; LPM_SVALUE             ; UNUSED            ; Untyped                       ;
-; LPM_PORT_UPDOWN        ; PORT_CONNECTIVITY ; Untyped                       ;
-; DEVICE_FAMILY          ; Cyclone IV E      ; Untyped                       ;
-; CARRY_CHAIN            ; MANUAL            ; Untyped                       ;
-; CARRY_CHAIN_LENGTH     ; 48                ; CARRY_CHAIN_LENGTH            ;
-; NOT_GATE_PUSH_BACK     ; ON                ; NOT_GATE_PUSH_BACK            ;
-; CARRY_CNT_EN           ; SMART             ; Untyped                       ;
-; LABWIDE_SCLR           ; ON                ; Untyped                       ;
-; USE_NEW_VERSION        ; TRUE              ; Untyped                       ;
-; CBXI_PARAMETER         ; cntr_t9k          ; Untyped                       ;
-+------------------------+-------------------+-------------------------------+
++--------------------------------------------------------------------------------------------------------------------+
+; Source assignments for FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block|altsyncram_6n71:auto_generated ;
++---------------------------------+--------------------+------+------------------------------------------------------+
+; Assignment                      ; Value              ; From ; To                                                   ;
++---------------------------------+--------------------+------+------------------------------------------------------+
+; OPTIMIZE_POWER_DURING_SYNTHESIS ; NORMAL_COMPILATION ; -    ; -                                                    ;
++---------------------------------+--------------------+------+------------------------------------------------------+
+
+
++-----------------------------------------------------------+
+; Parameter Settings for User Entity Instance: FSM:game_fsm ;
++----------------+-------+----------------------------------+
+; Parameter Name ; Value ; Type                             ;
++----------------+-------+----------------------------------+
+; SIZE           ; 5     ; Untyped                          ;
+; MAX_ROUNDS     ; 20    ; Untyped                          ;
++----------------+-------+----------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
-+-----------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst13 ;
-+------------------------+-------------------+--------------------------------+
-; Parameter Name         ; Value             ; Type                           ;
-+------------------------+-------------------+--------------------------------+
-; AUTO_CARRY_CHAINS      ; ON                ; AUTO_CARRY                     ;
-; IGNORE_CARRY_BUFFERS   ; OFF               ; IGNORE_CARRY                   ;
-; AUTO_CASCADE_CHAINS    ; ON                ; AUTO_CASCADE                   ;
-; IGNORE_CASCADE_BUFFERS ; OFF               ; IGNORE_CASCADE                 ;
-; LPM_WIDTH              ; 15                ; Untyped                        ;
-; LPM_DIRECTION          ; UP                ; Untyped                        ;
-; LPM_MODULUS            ; 24000             ; Untyped                        ;
-; LPM_AVALUE             ; UNUSED            ; Untyped                        ;
-; LPM_SVALUE             ; UNUSED            ; Untyped                        ;
-; LPM_PORT_UPDOWN        ; PORT_CONNECTIVITY ; Untyped                        ;
-; DEVICE_FAMILY          ; Cyclone IV E      ; Untyped                        ;
-; CARRY_CHAIN            ; MANUAL            ; Untyped                        ;
-; CARRY_CHAIN_LENGTH     ; 48                ; CARRY_CHAIN_LENGTH             ;
-; NOT_GATE_PUSH_BACK     ; ON                ; NOT_GATE_PUSH_BACK             ;
-; CARRY_CNT_EN           ; SMART             ; Untyped                        ;
-; LABWIDE_SCLR           ; ON                ; Untyped                        ;
-; USE_NEW_VERSION        ; TRUE              ; Untyped                        ;
-; CBXI_PARAMETER         ; cntr_onk          ; Untyped                        ;
-+------------------------+-------------------+--------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+-----------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst20 ;
-+------------------------+-------------------+--------------------------------+
-; Parameter Name         ; Value             ; Type                           ;
-+------------------------+-------------------+--------------------------------+
-; AUTO_CARRY_CHAINS      ; ON                ; AUTO_CARRY                     ;
-; IGNORE_CARRY_BUFFERS   ; OFF               ; IGNORE_CARRY                   ;
-; AUTO_CASCADE_CHAINS    ; ON                ; AUTO_CASCADE                   ;
-; IGNORE_CASCADE_BUFFERS ; OFF               ; IGNORE_CASCADE                 ;
-; LPM_WIDTH              ; 16                ; Untyped                        ;
-; LPM_DIRECTION          ; UP                ; Untyped                        ;
-; LPM_MODULUS            ; 34000             ; Untyped                        ;
-; LPM_AVALUE             ; UNUSED            ; Untyped                        ;
-; LPM_SVALUE             ; UNUSED            ; Untyped                        ;
-; LPM_PORT_UPDOWN        ; PORT_CONNECTIVITY ; Untyped                        ;
-; DEVICE_FAMILY          ; Cyclone IV E      ; Untyped                        ;
-; CARRY_CHAIN            ; MANUAL            ; Untyped                        ;
-; CARRY_CHAIN_LENGTH     ; 48                ; CARRY_CHAIN_LENGTH             ;
-; NOT_GATE_PUSH_BACK     ; ON                ; NOT_GATE_PUSH_BACK             ;
-; CARRY_CNT_EN           ; SMART             ; Untyped                        ;
-; LABWIDE_SCLR           ; ON                ; Untyped                        ;
-; USE_NEW_VERSION        ; TRUE              ; Untyped                        ;
-; CBXI_PARAMETER         ; cntr_qnk          ; Untyped                        ;
-+------------------------+-------------------+--------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+-----------------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: buzzer:inst|LPM_COUNTER:inst10 ;
-+------------------------+-------------------+--------------------------------+
-; Parameter Name         ; Value             ; Type                           ;
-+------------------------+-------------------+--------------------------------+
-; AUTO_CARRY_CHAINS      ; ON                ; AUTO_CARRY                     ;
-; IGNORE_CARRY_BUFFERS   ; OFF               ; IGNORE_CARRY                   ;
-; AUTO_CASCADE_CHAINS    ; ON                ; AUTO_CASCADE                   ;
-; IGNORE_CASCADE_BUFFERS ; OFF               ; IGNORE_CASCADE                 ;
-; LPM_WIDTH              ; 16                ; Untyped                        ;
-; LPM_DIRECTION          ; UP                ; Untyped                        ;
-; LPM_MODULUS            ; 42000             ; Untyped                        ;
-; LPM_AVALUE             ; UNUSED            ; Untyped                        ;
-; LPM_SVALUE             ; UNUSED            ; Untyped                        ;
-; LPM_PORT_UPDOWN        ; PORT_CONNECTIVITY ; Untyped                        ;
-; DEVICE_FAMILY          ; Cyclone IV E      ; Untyped                        ;
-; CARRY_CHAIN            ; MANUAL            ; Untyped                        ;
-; CARRY_CHAIN_LENGTH     ; 48                ; CARRY_CHAIN_LENGTH             ;
-; NOT_GATE_PUSH_BACK     ; ON                ; NOT_GATE_PUSH_BACK             ;
-; CARRY_CNT_EN           ; SMART             ; Untyped                        ;
-; LABWIDE_SCLR           ; ON                ; Untyped                        ;
-; USE_NEW_VERSION        ; TRUE              ; Untyped                        ;
-; CBXI_PARAMETER         ; cntr_pnk          ; Untyped                        ;
-+------------------------+-------------------+--------------------------------+
-Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
-
-
-+---------------------------------------------------------------------+
-; Parameter Settings for User Entity Instance: top:inst1|FSM:game_fsm ;
-+----------------+-------+--------------------------------------------+
-; Parameter Name ; Value ; Type                                       ;
-+----------------+-------+--------------------------------------------+
-; SIZE           ; 5     ; Untyped                                    ;
-; MAX_ROUNDS     ; 20    ; Untyped                                    ;
-+----------------+-------+--------------------------------------------+
++--------------------------------------------------------------------------+
+; Parameter Settings for User Entity Instance: FSM:game_fsm|lpm_ram_dq:ram ;
++------------------------+--------------+----------------------------------+
+; Parameter Name         ; Value        ; Type                             ;
++------------------------+--------------+----------------------------------+
+; LPM_WIDTH              ; 2            ; Untyped                          ;
+; LPM_WIDTHAD            ; 5            ; Untyped                          ;
+; LPM_NUMWORDS           ; 20           ; Untyped                          ;
+; LPM_INDATA             ; REGISTERED   ; Untyped                          ;
+; LPM_ADDRESS_CONTROL    ; REGISTERED   ; Untyped                          ;
+; LPM_OUTDATA            ; UNREGISTERED ; Untyped                          ;
+; LPM_FILE               ; UNUSED       ; Untyped                          ;
+; USE_EAB                ; ON           ; Untyped                          ;
+; DEVICE_FAMILY          ; Cyclone IV E ; Untyped                          ;
+; CBXI_PARAMETER         ; NOTHING      ; Untyped                          ;
+; AUTO_CARRY_CHAINS      ; ON           ; AUTO_CARRY                       ;
+; IGNORE_CARRY_BUFFERS   ; OFF          ; IGNORE_CARRY                     ;
+; AUTO_CASCADE_CHAINS    ; ON           ; AUTO_CASCADE                     ;
+; IGNORE_CASCADE_BUFFERS ; OFF          ; IGNORE_CASCADE                   ;
++------------------------+--------------+----------------------------------+
 Note: In order to hide this table in the UI and the text report file, please set the "Show Parameter Settings in Synthesis Report" option in "Analysis and Synthesis Settings -> More Settings" to "Off".
 
 
@@ -515,27 +421,28 @@ Note: In order to hide this table in the UI and the text report file, please set
 +-----------------------+-----------------------------+
 ; Type                  ; Count                       ;
 +-----------------------+-----------------------------+
-; boundary_port         ; 11                          ;
-; cycloneiii_ff         ; 103                         ;
-;     CLR               ; 19                          ;
-;     CLR SCLR          ; 35                          ;
+; boundary_port         ; 23                          ;
+; cycloneiii_ff         ; 240                         ;
+;     CLR               ; 45                          ;
+;     CLR SCLR          ; 36                          ;
+;     CLR SLD           ; 4                           ;
 ;     ENA               ; 4                           ;
-;     ENA SLD           ; 16                          ;
-;     SCLR              ; 19                          ;
-;     plain             ; 10                          ;
-; cycloneiii_lcell_comb ; 163                         ;
-;     arith             ; 68                          ;
-;         2 data inputs ; 64                          ;
-;         3 data inputs ; 4                           ;
-;     normal            ; 95                          ;
-;         0 data inputs ; 2                           ;
-;         1 data inputs ; 15                          ;
-;         2 data inputs ; 17                          ;
-;         3 data inputs ; 14                          ;
-;         4 data inputs ; 47                          ;
+;     SCLR              ; 114                         ;
+;     plain             ; 37                          ;
+; cycloneiii_lcell_comb ; 419                         ;
+;     arith             ; 163                         ;
+;         2 data inputs ; 150                         ;
+;         3 data inputs ; 13                          ;
+;     normal            ; 256                         ;
+;         0 data inputs ; 1                           ;
+;         1 data inputs ; 28                          ;
+;         2 data inputs ; 29                          ;
+;         3 data inputs ; 57                          ;
+;         4 data inputs ; 141                         ;
+; cycloneiii_ram_block  ; 2                           ;
 ;                       ;                             ;
 ; Max LUT depth         ; 8.00                        ;
-; Average LUT depth     ; 3.89                        ;
+; Average LUT depth     ; 3.58                        ;
 +-----------------------+-----------------------------+
 
 
@@ -554,83 +461,61 @@ Note: In order to hide this table in the UI and the text report file, please set
 Info: *******************************************************************
 Info: Running Quartus Prime Analysis & Synthesis
     Info: Version 20.1.0 Build 711 06/05/2020 SJ Lite Edition
-    Info: Processing started: Wed May  6 11:47:42 2026
+    Info: Processing started: Wed May 13 17:13:42 2026
 Info: Command: quartus_map --read_settings_files=on --write_settings_files=off genius_game -c genius_game
 Warning (18236): Number of processors has not been specified which may cause overloading on shared machines.  Set the global assignment NUM_PARALLEL_PROCESSORS in your QSF to an appropriate value for best performance.
 Info (20030): Parallel compilation is enabled and will use 16 of the 24 processors detected
-Info (12021): Found 1 design units, including 1 entities, in source file src/PRNG/PRNG.tdf
-    Info (12023): Found entity 1: PRNG File: /home/lacri/Genius-Game/src/PRNG/PRNG.tdf Line: 7
+Info (12021): Found 1 design units, including 1 entities, in source file src/SevenSeg/sevenseg.tdf
+    Info (12023): Found entity 1: sevenseg File: /home/lacri/Downloads/Genius-Game-feat-colors/src/SevenSeg/sevenseg.tdf Line: 5
 Info (12021): Found 1 design units, including 1 entities, in source file src/FSM/FSM.tdf
-    Info (12023): Found entity 1: FSM File: /home/lacri/Genius-Game/src/FSM/FSM.tdf Line: 15
-Warning (287009): Result of LOG2 is not an integer -- rounded result to next whole number File: /home/lacri/Genius-Game/src/Debounce/debounce.tdf Line: 6
+    Info (12023): Found entity 1: FSM File: /home/lacri/Downloads/Genius-Game-feat-colors/src/FSM/FSM.tdf Line: 14
+Warning (287009): Result of LOG2 is not an integer -- rounded result to next whole number File: /home/lacri/Downloads/Genius-Game-feat-colors/src/Debounce/debounce.tdf Line: 8
 Info (12021): Found 1 design units, including 1 entities, in source file src/Debounce/debounce.tdf
-    Info (12023): Found entity 1: debounce File: /home/lacri/Genius-Game/src/Debounce/debounce.tdf Line: 8
+    Info (12023): Found entity 1: debounce File: /home/lacri/Downloads/Genius-Game-feat-colors/src/Debounce/debounce.tdf Line: 10
 Info (12021): Found 1 design units, including 1 entities, in source file src/top.tdf
-    Info (12023): Found entity 1: top File: /home/lacri/Genius-Game/src/top.tdf Line: 11
-Info (12021): Found 1 design units, including 1 entities, in source file tests/test_top.bdf
-    Info (12023): Found entity 1: test_top
-Info (12021): Found 1 design units, including 1 entities, in source file tests/buzzer.bdf
-    Info (12023): Found entity 1: buzzer
-Info (12127): Elaborating entity "test_top" for the top level hierarchy
-Info (12128): Elaborating entity "buzzer" for hierarchy "buzzer:inst"
-Info (12128): Elaborating entity "LPM_COUNTER" for hierarchy "buzzer:inst|LPM_COUNTER:inst9"
-Info (12130): Elaborated megafunction instantiation "buzzer:inst|LPM_COUNTER:inst9"
-Info (12133): Instantiated megafunction "buzzer:inst|LPM_COUNTER:inst9" with the following parameter:
-    Info (12134): Parameter "LPM_DIRECTION" = "UP"
-    Info (12134): Parameter "LPM_MODULUS" = "57000"
-    Info (12134): Parameter "LPM_WIDTH" = "16"
-Info (12021): Found 1 design units, including 1 entities, in source file db/cntr_t9k.tdf
-    Info (12023): Found entity 1: cntr_t9k File: /home/lacri/Genius-Game/db/cntr_t9k.tdf Line: 28
-Info (12128): Elaborating entity "cntr_t9k" for hierarchy "buzzer:inst|LPM_COUNTER:inst9|cntr_t9k:auto_generated" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_counter.tdf Line: 259
-Info (12021): Found 1 design units, including 1 entities, in source file db/cmpr_dic.tdf
-    Info (12023): Found entity 1: cmpr_dic File: /home/lacri/Genius-Game/db/cmpr_dic.tdf Line: 23
-Info (12128): Elaborating entity "cmpr_dic" for hierarchy "buzzer:inst|LPM_COUNTER:inst9|cntr_t9k:auto_generated|cmpr_dic:cmpr1" File: /home/lacri/Genius-Game/db/cntr_t9k.tdf Line: 116
-Info (12128): Elaborating entity "LPM_COUNTER" for hierarchy "buzzer:inst|LPM_COUNTER:inst13"
-Info (12130): Elaborated megafunction instantiation "buzzer:inst|LPM_COUNTER:inst13"
-Info (12133): Instantiated megafunction "buzzer:inst|LPM_COUNTER:inst13" with the following parameter:
-    Info (12134): Parameter "LPM_DIRECTION" = "UP"
-    Info (12134): Parameter "LPM_MODULUS" = "24000"
-    Info (12134): Parameter "LPM_WIDTH" = "15"
-Info (12021): Found 1 design units, including 1 entities, in source file db/cntr_onk.tdf
-    Info (12023): Found entity 1: cntr_onk File: /home/lacri/Genius-Game/db/cntr_onk.tdf Line: 28
-Info (12128): Elaborating entity "cntr_onk" for hierarchy "buzzer:inst|LPM_COUNTER:inst13|cntr_onk:auto_generated" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_counter.tdf Line: 259
-Info (12021): Found 1 design units, including 1 entities, in source file db/cmpr_cic.tdf
-    Info (12023): Found entity 1: cmpr_cic File: /home/lacri/Genius-Game/db/cmpr_cic.tdf Line: 23
-Info (12128): Elaborating entity "cmpr_cic" for hierarchy "buzzer:inst|LPM_COUNTER:inst13|cntr_onk:auto_generated|cmpr_cic:cmpr1" File: /home/lacri/Genius-Game/db/cntr_onk.tdf Line: 112
-Info (12128): Elaborating entity "LPM_COUNTER" for hierarchy "buzzer:inst|LPM_COUNTER:inst20"
-Info (12130): Elaborated megafunction instantiation "buzzer:inst|LPM_COUNTER:inst20"
-Info (12133): Instantiated megafunction "buzzer:inst|LPM_COUNTER:inst20" with the following parameter:
-    Info (12134): Parameter "LPM_DIRECTION" = "UP"
-    Info (12134): Parameter "LPM_MODULUS" = "34000"
-    Info (12134): Parameter "LPM_WIDTH" = "16"
-Info (12021): Found 1 design units, including 1 entities, in source file db/cntr_qnk.tdf
-    Info (12023): Found entity 1: cntr_qnk File: /home/lacri/Genius-Game/db/cntr_qnk.tdf Line: 28
-Info (12128): Elaborating entity "cntr_qnk" for hierarchy "buzzer:inst|LPM_COUNTER:inst20|cntr_qnk:auto_generated" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_counter.tdf Line: 259
-Info (12128): Elaborating entity "LPM_COUNTER" for hierarchy "buzzer:inst|LPM_COUNTER:inst10"
-Info (12130): Elaborated megafunction instantiation "buzzer:inst|LPM_COUNTER:inst10"
-Info (12133): Instantiated megafunction "buzzer:inst|LPM_COUNTER:inst10" with the following parameter:
-    Info (12134): Parameter "LPM_DIRECTION" = "UP"
-    Info (12134): Parameter "LPM_MODULUS" = "42000"
-    Info (12134): Parameter "LPM_WIDTH" = "16"
-Info (12021): Found 1 design units, including 1 entities, in source file db/cntr_pnk.tdf
-    Info (12023): Found entity 1: cntr_pnk File: /home/lacri/Genius-Game/db/cntr_pnk.tdf Line: 28
-Info (12128): Elaborating entity "cntr_pnk" for hierarchy "buzzer:inst|LPM_COUNTER:inst10|cntr_pnk:auto_generated" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_counter.tdf Line: 259
-Info (12128): Elaborating entity "top" for hierarchy "top:inst1"
-Info (12128): Elaborating entity "FSM" for hierarchy "top:inst1|FSM:game_fsm" File: /home/lacri/Genius-Game/src/top.tdf Line: 24
-Info (12128): Elaborating entity "PRNG" for hierarchy "top:inst1|FSM:game_fsm|PRNG:rng" File: /home/lacri/Genius-Game/src/FSM/FSM.tdf Line: 41
-Info (12128): Elaborating entity "debounce" for hierarchy "top:inst1|debounce:key0" File: /home/lacri/Genius-Game/src/top.tdf Line: 26
+    Info (12023): Found entity 1: top File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 17
+Info (12021): Found 1 design units, including 1 entities, in source file src/PRNG/prng.tdf
+    Info (12023): Found entity 1: PRNG File: /home/lacri/Downloads/Genius-Game-feat-colors/src/PRNG/prng.tdf Line: 10
+Info (12021): Found 1 design units, including 1 entities, in source file src/Buzzer/beep.tdf
+    Info (12023): Found entity 1: beep File: /home/lacri/Downloads/Genius-Game-feat-colors/src/Buzzer/beep.tdf Line: 27
+Info (12127): Elaborating entity "top" for the top level hierarchy
+Info (12128): Elaborating entity "FSM" for hierarchy "FSM:game_fsm" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 31
+Info (12128): Elaborating entity "lpm_ram_dq" for hierarchy "FSM:game_fsm|lpm_ram_dq:ram" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/FSM/FSM.tdf Line: 55
+Info (12130): Elaborated megafunction instantiation "FSM:game_fsm|lpm_ram_dq:ram" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/FSM/FSM.tdf Line: 55
+Info (12133): Instantiated megafunction "FSM:game_fsm|lpm_ram_dq:ram" with the following parameter: File: /home/lacri/Downloads/Genius-Game-feat-colors/src/FSM/FSM.tdf Line: 55
+    Info (12134): Parameter "LPM_WIDTH" = "2"
+    Info (12134): Parameter "LPM_WIDTHAD" = "5"
+    Info (12134): Parameter "LPM_NUMWORDS" = "20"
+    Info (12134): Parameter "LPM_INDATA" = "REGISTERED"
+    Info (12134): Parameter "LPM_ADDRESS_CONTROL" = "REGISTERED"
+    Info (12134): Parameter "LPM_OUTDATA" = "UNREGISTERED"
+Info (12128): Elaborating entity "altram" for hierarchy "FSM:game_fsm|lpm_ram_dq:ram|altram:sram" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_ram_dq.tdf Line: 76
+Warning (287001): Assertion warning: altram does not support Cyclone IV E device family -- attempting best-case memory conversions, but power-up states and read during write behavior will be different for Cyclone IV E devices File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altram.tdf Line: 212
+Info (12131): Elaborated megafunction instantiation "FSM:game_fsm|lpm_ram_dq:ram|altram:sram", which is child of megafunction instantiation "FSM:game_fsm|lpm_ram_dq:ram" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/lpm_ram_dq.tdf Line: 76
+Info (12128): Elaborating entity "altsyncram" for hierarchy "FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altram.tdf Line: 103
+Info (12131): Elaborated megafunction instantiation "FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block", which is child of megafunction instantiation "FSM:game_fsm|lpm_ram_dq:ram" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altram.tdf Line: 103
+Info (12021): Found 1 design units, including 1 entities, in source file db/altsyncram_6n71.tdf
+    Info (12023): Found entity 1: altsyncram_6n71 File: /home/lacri/Downloads/Genius-Game-feat-colors/db/altsyncram_6n71.tdf Line: 28
+Info (12128): Elaborating entity "altsyncram_6n71" for hierarchy "FSM:game_fsm|lpm_ram_dq:ram|altram:sram|altsyncram:ram_block|altsyncram_6n71:auto_generated" File: /home/lacri/intelFPGA_lite/20.1/quartus/libraries/megafunctions/altsyncram.tdf Line: 792
+Info (12128): Elaborating entity "PRNG" for hierarchy "PRNG:rng" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 32
+Info (12128): Elaborating entity "beep" for hierarchy "beep:b" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 33
+Info (12128): Elaborating entity "sevenseg" for hierarchy "sevenseg:display" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 34
+Info (12128): Elaborating entity "debounce" for hierarchy "debounce:key0" File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 35
+Warning (13024): Output pins are stuck at VCC or GND
+    Warning (13410): Pin "dig[2]" is stuck at VCC File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 27
+    Warning (13410): Pin "dig[3]" is stuck at VCC File: /home/lacri/Downloads/Genius-Game-feat-colors/src/top.tdf Line: 27
 Info (286030): Timing-Driven Synthesis is running
-Info (17049): 12 registers lost all their fanouts during netlist optimizations.
 Info (16010): Generating hard_block partition "hard_block:auto_generated_inst"
     Info (16011): Adding 0 node(s), including 0 DDIO, 0 PLL, 0 transceiver and 0 LCELL
-Info (21057): Implemented 180 device resources after synthesis - the final resource count might be different
+Info (21057): Implemented 443 device resources after synthesis - the final resource count might be different
     Info (21058): Implemented 6 input pins
-    Info (21059): Implemented 5 output pins
-    Info (21061): Implemented 169 logic cells
-Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 2 warnings
-    Info: Peak virtual memory: 542 megabytes
-    Info: Processing ended: Wed May  6 11:47:45 2026
-    Info: Elapsed time: 00:00:03
+    Info (21059): Implemented 17 output pins
+    Info (21061): Implemented 418 logic cells
+    Info (21064): Implemented 2 RAM segments
+Info: Quartus Prime Analysis & Synthesis was successful. 0 errors, 6 warnings
+    Info: Peak virtual memory: 554 megabytes
+    Info: Processing ended: Wed May 13 17:13:46 2026
+    Info: Elapsed time: 00:00:04
     Info: Total CPU time (on all processors): 00:00:10
 
 

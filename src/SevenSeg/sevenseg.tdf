@@ -1,0 +1,74 @@
+-- Authors: João Donato, Matheus Sousa.
+
+TITLE "7-segment driver";
+
+SUBDESIGN sevenseg
+(
+	clock : INPUT;
+	value[4..0] : INPUT;
+
+	seg[7..0] : OUTPUT;
+	dig[3..0] : OUTPUT;
+)
+
+VARIABLE
+	refresh[15..0] : DFF;
+	scan : NODE;
+	decimal_digit[3..0] : NODE;
+	ones[3..0] : NODE;
+	tens[3..0] : NODE;
+
+BEGIN
+	refresh[].clk = clock;
+	refresh[].d = refresh[].q + 1;
+
+	scan = refresh[15].q;
+
+	CASE value[] IS
+		WHEN B"00000" => tens[] = B"0000"; ones[] = B"0000";
+		WHEN B"00001" => tens[] = B"0000"; ones[] = B"0001";
+		WHEN B"00010" => tens[] = B"0000"; ones[] = B"0010";
+		WHEN B"00011" => tens[] = B"0000"; ones[] = B"0011";
+		WHEN B"00100" => tens[] = B"0000"; ones[] = B"0100";
+		WHEN B"00101" => tens[] = B"0000"; ones[] = B"0101";
+		WHEN B"00110" => tens[] = B"0000"; ones[] = B"0110";
+		WHEN B"00111" => tens[] = B"0000"; ones[] = B"0111";
+		WHEN B"01000" => tens[] = B"0000"; ones[] = B"1000";
+		WHEN B"01001" => tens[] = B"0000"; ones[] = B"1001";
+		WHEN B"01010" => tens[] = B"0001"; ones[] = B"0000";
+		WHEN B"01011" => tens[] = B"0001"; ones[] = B"0001";
+		WHEN B"01100" => tens[] = B"0001"; ones[] = B"0010";
+		WHEN B"01101" => tens[] = B"0001"; ones[] = B"0011";
+		WHEN B"01110" => tens[] = B"0001"; ones[] = B"0100";
+		WHEN B"01111" => tens[] = B"0001"; ones[] = B"0101";
+		WHEN B"10000" => tens[] = B"0001"; ones[] = B"0110";
+		WHEN B"10001" => tens[] = B"0001"; ones[] = B"0111";
+		WHEN B"10010" => tens[] = B"0001"; ones[] = B"1000";
+		WHEN B"10011" => tens[] = B"0001"; ones[] = B"1001";
+		WHEN B"10100" => tens[] = B"0010"; ones[] = B"0000";
+		WHEN OTHERS    => tens[] = B"0000"; ones[] = B"0000";
+	END CASE;
+
+	IF scan THEN
+		decimal_digit[] = tens[];
+		dig[] = B"1101";
+	ELSE
+		decimal_digit[] = ones[];
+		dig[] = B"1110";
+	END IF;
+
+	TABLE
+		decimal_digit[] => seg[];
+		B"0000" => B"11000000";
+		B"0001" => B"11111001";
+		B"0010" => B"10100100";
+		B"0011" => B"10110000";
+		B"0100" => B"10011001";
+		B"0101" => B"10010010";
+		B"0110" => B"10000010";
+		B"0111" => B"11111000";
+		B"1000" => B"10000000";
+		B"1001" => B"10010000";
+		B"1111" => B"11111111";
+	END TABLE;
+END;
