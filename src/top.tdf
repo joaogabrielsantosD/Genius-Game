@@ -43,7 +43,7 @@ BEGIN
 	-- Random Generator Inputs --
 	rng.clock = clock;
 	rng.reset = rst_n;
-	rng.enable = game_fsm.get_color;
+	rng.enable = VCC;
 	
 	-- Debounce Inputs --
 	key0.clock  = clock; key0.key_in = key[0];
