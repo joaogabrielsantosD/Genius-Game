@@ -1,232 +1,275 @@
--- TODO: Implement 7seg and add in the states
-
 TITLE "FSM";
 
-INCLUDE "lpm_ram_dq.inc";
+INCLUDE "src/RAM/ram_single_port.inc";
 
-CONSTANT DELAY_500MS = 50000000;           -- 1 s de exibição por cor
-CONSTANT DELAY_250MS = DELAY_500MS DIV 2;  -- 0,5 s de pausa entre cores
-CONSTANT DELAY_5S    = DELAY_500MS * 10;   -- timeout para o jogador
+CONSTANT DELAY_500MS = 50000000;
+CONSTANT DELAY_250MS = DELAY_500MS DIV 2;
+CONSTANT DELAY_5S    = DELAY_500MS * 10;
 
-PARAMETERS (SIZE = 3, MAX_ROUNDS = 5);
+PARAMETERS (ROUNDS = 5);
+CONSTANT MAX_ROUNDS = ROUNDS - 1;
+
 SUBDESIGN FSM
 (
-   clock, reset  : INPUT;   -- Clock 50 MHz e reset ativo-alto
+   clock, reset       : INPUT;
 
-   key0_raw      : INPUT;   -- botão 0 sem debounce (usado na combinação START)
-   key3_raw      : INPUT;   -- botão 3 sem debounce
+   key0_raw           : INPUT;
+   key3_raw           : INPUT;
 
-   key0          : INPUT;   -- botão 0 com debounce
-   key1          : INPUT;   -- botão 1
-   key2          : INPUT;   -- botão 2
-   key3          : INPUT;   -- botão 3
+   key0               : INPUT;
+   key1               : INPUT;
+   key2               : INPUT;
+   key3               : INPUT;
 
-   random_color[1..0] : INPUT;  -- cor pseudo-aleatória (2 bits)
+   random_color[1..0] : INPUT;
 
-   led_out[3..0] : OUTPUT;  -- 4 LEDs de cor
-   loser         : OUTPUT   -- sinaliza derrota
+   led_out[3..0]      : OUTPUT;
+   loser              : OUTPUT;
+   get_color          : OUTPUT;
 )
 
 VARIABLE
-   fsm_states : MACHINE WITH STATES ( 
-		IDLE,
+   fsm_states : MACHINE WITH STATES (
+      IDLE,
       START_GAME,
       SHOW_SEQUENCE,
-      SET_COLOR,
+      WAIT_RAM,
+      UPDATE_SHOW_PTR,
       READ_COLOR,
+      WAIT_RAM_READ,
+      UPDATE_READ_PTR,
+      NEW_ROUND,
       PLAYER_WIN,
-      PLAYER_LOSE 
-	);
-
-   delay[31..0]         : DFF;   -- contador de tempo genérico
-   game_round[SIZE-1..0]: DFF;   -- rodada atual (1 .. MAX_ROUNDS)
-
-   -- -------------------------------------------------------
-   --  RAM: grava a sequência de cores
-   --   LPM_WIDTH    = 2  → 1 cor por palavra (2 bits)
-   --   LPM_WIDTHAD  = SIZE → 2^SIZE endereços
-   --   LPM_NUMWORDS = MAX_ROUNDS
-   -- -------------------------------------------------------
-   ram : lpm_ram_dq WITH (
-      LPM_WIDTH           = 2,
-      LPM_WIDTHAD         = SIZE,
-      LPM_NUMWORDS        = MAX_ROUNDS,
-      LPM_INDATA          = "REGISTERED",
-      LPM_ADDRESS_CONTROL = "REGISTERED",
-      LPM_OUTDATA         = "UNREGISTERED"
+      PLAYER_LOSE
    );
 
-   write_ptr[SIZE-1..0] : DFF;  -- próxima posição de escrita
-   read_ptr[SIZE-1..0]  : DFF;  -- posição lida (show / verificação)
+   ram : ram_single_port;
 
-   -- show_ptr: percorre 0..game_round-1 durante SHOW_SEQUENCE
-   show_ptr[SIZE-1..0]  : DFF;
-	
+   delay[31..0]       : DFF;
+   game_round[5..0]   : DFF;   -- índice de rodada (0 = 1ª rodada, MAX_ROUNDS = última)
+
+   write_ptr[5..0]    : DFF;   -- próxima posição de escrita na RAM
+   read_ptr[5..0]     : DFF;   -- posição de verificação do jogador
+   show_ptr[5..0]     : DFF;   -- posição de exibição da sequência
+
 BEGIN
    DEFAULTS
-      led_out[]     = 0;
-      loser         = GND;
-		
-      delay[].d     = 0;
-      --game_round[].d = 1;
-		
-      ram.we        = GND;
+      led_out[]  = 0;
+      loser      = GND;
+      get_color  = GND;
    END DEFAULTS;
 	
    fsm_states.clk   = clock;
    fsm_states.reset = !reset;
 
-	delay[].clk  = clock;  delay[].clrn  = reset;
-   game_round[].clk = clock; game_round[].clrn = reset;
-	
-	game_round[].d = game_round[].q;
+   delay[].clk        = clock;  delay[].clrn        = reset;
+   game_round[].clk   = clock;  game_round[].clrn   = reset;
 
-   write_ptr[].clk = clock; write_ptr[].clrn = reset;
-   read_ptr[].clk  = clock; read_ptr[].clrn  = reset;
-   show_ptr[].clk  = clock; show_ptr[].clrn  = reset;
-	
-	write_ptr[].d = write_ptr[].q;
-	read_ptr[].d  = read_ptr[].q;
-	show_ptr[].d  = show_ptr[].q;
-	
-   ram.inclock = clock;
+   ram.ram_clk = clock;
 
+   write_ptr[].clk = clock;  write_ptr[].clrn = reset;
+   read_ptr[].clk  = clock;  read_ptr[].clrn  = reset;
+   show_ptr[].clk  = clock;  show_ptr[].clrn  = reset;
+	
+	--write_ptr[].d = write_ptr[].q;
+	--read_ptr[].d  = read_ptr[].q;
+	--show_ptr[].d  = show_ptr[].q;
+	led_out[] = write_ptr[3..0];
+	--led_out[] = read_ptr[3..0];
+	--led_out[] = show_ptr[3..0];
+	--led_out[] = game_round[3..0];
+
+   -- --------------------------------------------------------
+   -- FSM
+   -- --------------------------------------------------------
    CASE fsm_states IS
+
+      -- ------------------------------------------------------
+      -- IDLE: pisca idle_counter nos LEDs enquanto espera
+      --       KEY0+KEY3 simultâneos para iniciar o jogo.
+      --       game_round é zerado aqui para garantir estado
+      --       limpo ao entrar em START_GAME.
+      -- ------------------------------------------------------
       WHEN IDLE =>
-			-- TODO: Show record value (7seg.inc)
-         led_out[] = 0;
-			
-         game_round[].d = 0;
-         delay[].d      = 0;
+			led_out[]      = 0;
          write_ptr[].d  = 0;
          read_ptr[].d   = 0;
          show_ptr[].d   = 0;
-			
-         -- Iniciar jogo: KEY0 + KEY3 simultaneamente
+         game_round[].d = 0;
+
          IF (NOT key0_raw AND NOT key3_raw) THEN
-            fsm_states  = START_GAME;
-         ELSE
-            fsm_states = IDLE;
+            fsm_states = START_GAME;
          END IF;
-			
+
+      -- ------------------------------------------------------
+      -- START_GAME: aguarda 500 ms (pausa visual), captura
+      --             uma cor aleatória e grava na RAM na
+      --             posição write_ptr atual.
+      --             Ao fim, reseta show_ptr e vai exibir.
+      -- ------------------------------------------------------
       WHEN START_GAME =>
-			-- TODO: Clear 7seg here (7seg.inc)
-			ram.address[] = write_ptr[].q;
-			ram.we        = VCC;
-			
+         ram.ram_addr[5..0] = write_ptr[5..0];
+			get_color      = VCC;
+
          IF delay[] < DELAY_500MS THEN
-            delay[].d  = delay[] + 1;
-            led_out[]  = 0;
+				ram.ram_wren = GND;
+            delay[].d    = delay[] + 1;
+            led_out[]    = 0;
          ELSE
-            delay[].d = 0;
-            ram.data[] = random_color[];
-				
-            -- Reseta ponteiro de exibição para reproduzir do início
-            show_ptr[].d = 0;
-				
-            fsm_states = SET_COLOR;
+            delay[].d             = 0;
+				ram.ram_wren   		 = VCC;
+            ram.ram_data_in[1..0] = random_color[1..0];
+            show_ptr[5..0].d      = 0;
+            fsm_states            = SHOW_SEQUENCE;
          END IF;
-			
-      WHEN SET_COLOR =>
-			-- TODO: Show the number in 7seg according the color
-			
-         -- Aguarda 1 ciclo para a RAM registrar a escrita
-         -- (LPM_ADDRESS_CONTROL = REGISTERED: endereço + we
-         --  são amostrados na subida do clock)
-         show_ptr[].d = 0;
-         fsm_states   = SHOW_SEQUENCE;
-			
+
+      -- ------------------------------------------------------
+      -- SHOW_SEQUENCE: coloca show_ptr no endereço da RAM e
+      --                vai para WAIT_RAM aguardar 1 ciclo de
+      --                latência antes de ler ram_data_out.
+      -- ------------------------------------------------------
       WHEN SHOW_SEQUENCE =>
-         -- Conecta a RAM ao ponteiro de exibição
-         ram.address[] = show_ptr[].q;
-         ram.we        = GND;
-			
-         -- Converte saída da RAM → LED one-hot para exibição
+         ram.ram_addr[5..0] = show_ptr[5..0];
+         ram.ram_wren       = GND;
+         delay[].d          = 0;
+         fsm_states         = WAIT_RAM;
+
+      -- ------------------------------------------------------
+      -- WAIT_RAM: ram_data_out já é válido aqui.
+      --           Exibe o LED correspondente durante 250 ms.
+      --           Ao fim do tempo decide: avançar ou ler input.
+      -- ------------------------------------------------------
+      WHEN WAIT_RAM =>
+         ram.ram_addr[5..0] = show_ptr[5..0];
+         ram.ram_wren       = GND;
+
          IF delay[] < DELAY_250MS THEN
-            delay[].d  = delay[] + 1;
-				IF    ram.q[] == B"00" THEN led_out[] = B"0001";
-				ELSIF ram.q[] == B"01" THEN led_out[] = B"0010";
-				ELSIF ram.q[] == B"10" THEN led_out[] = B"0100";
-				ELSif ram.q[] == B"11" then led_out[] = B"1000";
-				END IF;
-            fsm_states = SHOW_SEQUENCE;
+            delay[].d = delay[] + 1;
+            IF    ram.ram_data_out[] == B"00" THEN led_out[] = B"0001";
+            ELSIF ram.ram_data_out[] == B"01" THEN led_out[] = B"0010";
+            ELSIF ram.ram_data_out[] == B"10" THEN led_out[] = B"0100";
+            ELSIF ram.ram_data_out[] == B"11" THEN led_out[] = B"1000";
+            END IF;
+            fsm_states = WAIT_RAM;
          ELSE
-				led_out[] = 0;
-            delay[].d = 0;
-				
-            IF show_ptr[].q == game_round[].q THEN
-               -- Sequência completa exibida → vez do jogador
-               read_ptr[].d = 0;
-               fsm_states   = READ_COLOR;
+            -- show_ptr percorre 0..game_round[] inclusive
+            IF show_ptr[5..0] == game_round[5..0] THEN
+               read_ptr[5..0].d = 0;
+               delay[].d        = 0;
+               fsm_states       = READ_COLOR;
             ELSE
-               -- Avança para a próxima cor da sequência
-               show_ptr[].d = show_ptr[].q + 1;
-               fsm_states   = SHOW_SEQUENCE;
+               delay[].d  = 0;
+               fsm_states = UPDATE_SHOW_PTR;
             END IF;
          END IF;
-			
+
+      -- ------------------------------------------------------
+      -- UPDATE_SHOW_PTR: avança show_ptr e volta para
+      --                  SHOW_SEQUENCE (que vai para WAIT_RAM).
+      -- ------------------------------------------------------
+      WHEN UPDATE_SHOW_PTR =>
+         show_ptr[5..0].d = show_ptr[5..0].q + 1;
+         delay[].d        = 0;
+         fsm_states       = SHOW_SEQUENCE;
+
+      -- ------------------------------------------------------
+      -- READ_COLOR: coloca read_ptr no endereço e vai para
+      --             WAIT_RAM_READ aguardar 1 ciclo de latência.
+      -- ------------------------------------------------------
       WHEN READ_COLOR =>
-         -- FIX 3: game_round é sempre >= 1 aqui (incrementado antes de
-         --        entrar em START_GAME), então (game_round - 1) nunca
-         --        sofre underflow unsigned.
-         ram.address[] = read_ptr[].q;
-         ram.we        = GND;
- 
-            IF (key0 AND (ram.q[] == B"00")) OR
-               (key1 AND (ram.q[] == B"01")) OR
-               (key2 AND (ram.q[] == B"10")) OR
-               (key3 AND (ram.q[] == B"11")) THEN
-					
+         ram.ram_addr[5..0] = read_ptr[5..0];
+         ram.ram_wren       = GND;
+         fsm_states         = WAIT_RAM_READ;
+
+      -- ------------------------------------------------------
+      -- WAIT_RAM_READ: ram_data_out já é válido aqui.
+      --                Aguarda input do jogador ou timeout.
+      -- ------------------------------------------------------
+      WHEN WAIT_RAM_READ =>
+         ram.ram_addr[5..0] = read_ptr[5..0];
+         ram.ram_wren       = GND;
+
+         IF (key0 OR key1 OR key2 OR key3) THEN
+            -- Tecla pressionada: verifica se é a correta
+            IF (key0 AND (ram.ram_data_out[1..0] == B"00")) OR
+               (key1 AND (ram.ram_data_out[1..0] == B"01")) OR
+               (key2 AND (ram.ram_data_out[1..0] == B"10")) OR
+               (key3 AND (ram.ram_data_out[1..0] == B"11")) THEN
+
                delay[].d = 0;
-					
-               IF read_ptr[].q == game_round[].q THEN
-                  -- Jogador completou a sequência desta rodada
-                  IF game_round[].q == MAX_ROUNDS THEN
+
+               -- read_ptr percorre 0..game_round[] inclusive
+               IF read_ptr[5..0] == game_round[5..0] THEN
+                  IF game_round[5..0] == MAX_ROUNDS THEN
                      fsm_states = PLAYER_WIN;
                   ELSE
-                     -- Próxima rodada: zera ponteiros, incrementa rodada
-                     read_ptr[].d   = 0;
-                     write_ptr[].d  = write_ptr[].q + 1;
-                     show_ptr[].d   = 0;
-                     game_round[].d = game_round[].q + 1;
-                     fsm_states     = START_GAME;
+                     fsm_states = NEW_ROUND;
                   END IF;
                ELSE
-                  -- Cor correta, mas ainda há mais na sequência
-                  read_ptr[].d = read_ptr[].q + 1;
-                  fsm_states   = READ_COLOR;
+                  fsm_states = UPDATE_READ_PTR;
                END IF;
-				end if;
- 
-            -- FIX 2: condição de tecla errada simplificada.
-            --        Se qualquer tecla foi pressionada e o ramo acima
-            --        (tecla correta) não foi satisfeito, é derrota.
-            --ELSIF (key0 OR key1 OR key2 OR key3) THEN
-               -- Tecla ERRADA pressionada → derrota imediata
-            --   delay[].d  = 0;
-            --   fsm_states = PLAYER_LOSE;
-				
-			IF delay[] < DELAY_5S THEN
-				delay[].d  = delay[] + 1;
+
+            ELSE
+               -- Tecla errada → derrota imediata
+               delay[].d  = 0;
+               fsm_states = PLAYER_LOSE;
+            END IF;
+
+         ELSIF delay[] < DELAY_5S THEN
+            delay[].d = delay[] + 1;
          ELSE
             -- Timeout → derrota
             delay[].d  = 0;
             fsm_states = PLAYER_LOSE;
          END IF;
-			
-		WHEN PLAYER_WIN =>
-         -- TODO: exibir pontuação no 7seg
-			loser = GND;
+
+      -- ------------------------------------------------------
+      -- UPDATE_READ_PTR: avança read_ptr e volta para
+      --                  READ_COLOR (que vai para WAIT_RAM_READ).
+      -- ------------------------------------------------------
+      WHEN UPDATE_READ_PTR =>
+         delay[].d        = 0;
+         read_ptr[5..0].d = read_ptr[5..0].q + 1;
+         fsm_states       = READ_COLOR;
+
+      -- ------------------------------------------------------
+      -- NEW_ROUND: pausa de 250 ms entre rodadas, depois
+      --            avança write_ptr e game_round e volta para
+      --            START_GAME para gravar a nova cor.
+      -- ------------------------------------------------------
+      WHEN NEW_ROUND =>
+         IF delay[] < DELAY_250MS THEN
+            delay[].d = delay[] + 1;
+         ELSE
+            delay[].d          = 0;
+            write_ptr[5..0].d  = write_ptr[5..0].q  + 1;
+            game_round[5..0].d = game_round[5..0].q + 1;
+            read_ptr[5..0].d   = 0;
+            show_ptr[5..0].d   = 0;
+            fsm_states         = START_GAME;
+         END IF;
+
+      -- ------------------------------------------------------
+      -- PLAYER_WIN: todos os LEDs acesos, loop eterno.
+      --             TODO: exibir recorde no 7seg
+      -- ------------------------------------------------------
+      WHEN PLAYER_WIN =>
+         loser      = GND;
          led_out[]  = B"1111";
          fsm_states = PLAYER_WIN;
-			
+
+      -- ------------------------------------------------------
+      -- PLAYER_LOSE: LEDs 1 e 2 acesos, sinal loser ativo.
+      --              TODO: limpar 7seg
+      -- ------------------------------------------------------
       WHEN PLAYER_LOSE =>
-         -- TODO: limpar 7seg
          loser      = VCC;
          led_out[]  = B"0110";
          fsm_states = PLAYER_LOSE;
-			
-		WHEN OTHERS =>
+
+      WHEN OTHERS =>
          fsm_states = IDLE;
-    END CASE;
+
+   END CASE;
+
 END;

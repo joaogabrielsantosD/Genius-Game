@@ -1,78 +1,78 @@
-title "RAM memory";
+TITLE "RAM memory";
 
-subdesign ram_single_port 
+SUBDESIGN ram_single_port 
 (
 	ram_clk, ram_wren	 : INPUT;
-	ram_addr[5..0]	    : input;
-	ram_data_in[1..0]	 : input;
-	ram_data_out[1..0] : output;
+	ram_addr[5..0]	    : INPUT;
+	ram_data_in[1..0]	 : INPUT;
+	ram_data_out[1..0] : OUTPUT;
 )
-variable
+VARIABLE
 	regs[20..0][1..0] : DFF;
-begin
+BEGIN
 	regs[][].clk = ram_clk;
 	
-	case ram_addr[] is
-		when 0 =>
-			if ram_wren then
+	CASE ram_addr[] IS
+		WHEN 0 =>
+			IF ram_wren THEN
 				regs[1][].d = regs[1][].q;
 				regs[0][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[0][].q;
-		when 1 =>
-			if ram_wren then
+		WHEN 1 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[1][].q;
-		when 2 =>
-			if ram_wren then
+		WHEN 2 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[2][].q;
-		when 3 =>
-			if ram_wren then
+		WHEN 3 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
 				regs[3][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[3][].q;
-		when 4 =>
-			if ram_wren then
+		WHEN 4 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
 				regs[3][].d = regs[3][].q;
 				regs[4][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[4][].q;
-		when 5 =>
-			if ram_wren then
+		WHEN 5 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
 				regs[3][].d = regs[3][].q;
 				regs[4][].d = regs[4][].q;
 				regs[5][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[5][].q;
-		when 6 =>
-			if ram_wren then
+		WHEN 6 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -80,12 +80,12 @@ begin
 				regs[4][].d = regs[4][].q;
 				regs[5][].d = regs[5][].q;
 				regs[6][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[6][].q;
-		when 7 =>
-			if ram_wren then
+		WHEN 7 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -94,12 +94,12 @@ begin
 				regs[5][].d = regs[5][].q;
 				regs[6][].d = regs[6][].q;
 				regs[7][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[7][].q;
-		when 8 =>
-			if ram_wren then
+		WHEN 8 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -109,12 +109,12 @@ begin
 				regs[6][].d = regs[6][].q;
 				regs[7][].d = regs[7][].q;
 				regs[8][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[8][].q;
-		when 9 =>
-			if ram_wren then
+		WHEN 9 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -125,12 +125,12 @@ begin
 				regs[7][].d = regs[7][].q;
 				regs[8][].d = regs[8][].q;
 				regs[9][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[9][].q;
-		when 10 =>
-			if ram_wren then
+		WHEN 10 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -142,12 +142,12 @@ begin
 				regs[8][].d = regs[8][].q;
 				regs[9][].d = regs[9][].q;
 				regs[10][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[10][].q;
-		when 11 =>
-			if ram_wren then
+		WHEN 11 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -160,12 +160,12 @@ begin
 				regs[9][].d = regs[9][].q;
 				regs[10][].d = regs[10][].q;
 				regs[11][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[11][].q;
-		when 12 =>
-			if ram_wren then
+		WHEN 12 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -179,12 +179,12 @@ begin
 				regs[10][].d = regs[10][].q;
 				regs[11][].d = regs[11][].q;
 				regs[12][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[12][].q;
-		when 13 =>
-			if ram_wren then
+		WHEN 13 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -199,12 +199,12 @@ begin
 				regs[11][].d = regs[11][].q;
 				regs[12][].d = regs[12][].q;
 				regs[13][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[13][].q;
-		when 14 =>
-			if ram_wren then
+		WHEN 14 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -220,12 +220,12 @@ begin
 				regs[12][].d = regs[12][].q;
 				regs[13][].d = regs[13][].q;
 				regs[14][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[14][].q;
-		when 15 =>
-			if ram_wren then
+		WHEN 15 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -242,12 +242,12 @@ begin
 				regs[13][].d = regs[13][].q;
 				regs[14][].d = regs[14][].q;
 				regs[15][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[15][].q;
-		when 16 =>
-			if ram_wren then
+		WHEN 16 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -265,12 +265,12 @@ begin
 				regs[14][].d = regs[14][].q;
 				regs[15][].d = regs[15][].q;
 				regs[16][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[16][].q;
-		when 17 =>
-			if ram_wren then
+		WHEN 17 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -289,12 +289,12 @@ begin
 				regs[15][].d = regs[15][].q;
 				regs[16][].d = regs[16][].q;
 				regs[17][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[17][].q;
-		when 18 =>
-			if ram_wren then
+		WHEN 18 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -314,12 +314,12 @@ begin
 				regs[16][].d = regs[16][].q;
 				regs[17][].d = regs[17][].q;
 				regs[18][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[18][].q;
-		when 19 =>
-			if ram_wren then
+		WHEN 19 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -340,12 +340,12 @@ begin
 				regs[17][].d = regs[17][].q;
 				regs[18][].d = regs[18][].q;
 				regs[19][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[19][].q;
-		when 20 =>
-			if ram_wren then
+		WHEN 20 =>
+			IF ram_wren THEN
 				regs[0][].d = regs[0][].q;
 				regs[1][].d = regs[1][].q;
 				regs[2][].d = regs[2][].q;
@@ -367,11 +367,11 @@ begin
 				regs[18][].d = regs[18][].q;
 				regs[19][].d = regs[19][].q;
 				regs[20][].d = ram_data_in[];
-			else
+			ELSE
 				regs[][].d = regs[][].q;
-			end if;
+			END IF;
 			ram_data_out[] = regs[20][].q;
-		when others =>
+		WHEN OTHERS =>
 			regs[][].d = regs[][].q;
-	end case;
-end;
+	END CASE;
+END;

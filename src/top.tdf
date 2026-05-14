@@ -7,9 +7,7 @@ INCLUDE "src/FSM/FSM.inc";
 
 CONSTANT MAX 			= 20;
 DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);  -- The max game rounds can be is 50 rounds
-
-CONSTANT MAX_ROUNDS = GAME_LIMIT(5); 		   -- Max game value in this section
-CONSTANT GAME_SIZE = CEIL(LOG2(MAX_ROUNDS)); -- Size in bits of the max rounds 
+CONSTANT MAX_ROUNDS  = GAME_LIMIT(5); 		     -- Max game value in this section
 
 SUBDESIGN top
 (
@@ -23,7 +21,7 @@ SUBDESIGN top
 )
 
 VARIABLE
-	game_fsm : FSM WITH (SIZE = GAME_SIZE, MAX_ROUNDS = MAX_ROUNDS);
+	game_fsm : FSM WITH (ROUNDS = MAX_ROUNDS);
 	rng : PRNG;
 	b : beep;
 	key0, key1, key2, key3 : debounce;
@@ -34,18 +32,18 @@ BEGIN
 		buzzer = GND;
 	END DEFAULTS;
 	
-	ASSERT !(MAX_ROUNDS == 0)
+	ASSERT (MAX_ROUNDS > 0)
 	REPORT "o jogo nao pode ser igual a zero"
 	SEVERITY error;
 	
-	ASSERT !(MAX_ROUNDS > 20)
+	ASSERT (MAX_ROUNDS <= 20)
 	REPORT "o jogo nao pode ser maior que 20"
 	SEVERITY error;
 	
 	-- Random Generator Inputs --
 	rng.clock = clock;
 	rng.reset = rst_n;
-	rng.enable = VCC;
+	rng.enable = game_fsm.get_color;
 	
 	-- Debounce Inputs --
 	key0.clock  = clock; key0.key_in = key[0];
