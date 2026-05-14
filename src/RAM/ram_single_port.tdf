@@ -3,7 +3,7 @@ TITLE "RAM memory";
 SUBDESIGN ram_single_port 
 (
 	ram_clk, ram_wren	 : INPUT;
-	ram_addr[5..0]	    : INPUT;
+	ram_addr[4..0]	    : INPUT;
 	ram_data_in[1..0]	 : INPUT;
 	ram_data_out[1..0] : OUTPUT;
 )
