@@ -1,27 +1,125 @@
-TITLE "sete_seg";
+TITLE "Display de 7 segmentos";
+
+CONSTANT clk_FPGA = 50000000;								  -- Clock frequency of the FPGA in Hz
+CONSTANT freq = 10000;										  -- Desired output frequency for the debounce sampling clock (50 Hz)
+CONSTANT overflow_f = CEIL(clk_FPGA DIV (freq * 2)); -- Counter overflow value: number of FPGA clock cycles per half-period of the sampling clock
+CONSTANT n_bits_f = CEIL(LOG2(overflow_f)); 			  -- Number of bits required for the counter to reach overflow_f
 
 SUBDESIGN sete_seg 
 (
-	--clk, entrada[5..0], reset: INPUT;
-	entrada[5..0] : INPUT;
-	dig[3..0], seg[7..0]     : OUTPUT;
+	clock       : INPUT;
+	loser       : INPUT;
+	idle_state  : INPUT;
+	round[4..0] : INPUT;
+	
+	data_in[3..0] : INPUT;
+	
+	dig[3..0], seg[7..0]  : OUTPUT;
 )
 
-BEGIN
-	dig[3..0] = B"1111";
+VARIABLE
+	cnt[n_bits_f..0] : DFF;  -- Counter used to divide the main clock down to 50 Hz
+	alt              : TFF;  -- Toggle flip-flop that produces the divided clock signal
+	clk_out          : NODE; -- Internal node carrying the 50 Hz divided clock
 
-	TABLE
-		entrada[] => seg[];
-		B"000000" => B"11111100"; -- 0
-		B"000001" => B"01100000"; -- 1
-		B"000010" => B"11011010"; -- 2
-		B"000011" => B"11110010"; -- 3
-		B"000100" => B"01100110"; -- 4
-		B"000101" => B"10110110"; -- 5
-		B"000110" => B"10111110"; -- 6
-		B"000111" => B"11100000"; -- 7
-		B"001000" => B"11111110"; -- 8
-		B"001001" => B"11110110"; -- 9
-		B"XX1X1X" => B"00000000"; -- >10
-	END TABLE;
+	record[4..0] : DFF;
+	
+	jkff1        : JKFF;
+	jkff2        : JKFF;
+	
+BEGIN
+	DEFAULTS
+		seg[] = B"00000011";
+	END DEFAULTS;
+
+	cnt[].clk = clock;
+	alt.clk   = clock;
+
+	IF cnt[] < overflow_f THEN
+		cnt[].d = cnt[] + 1;  -- Keep counting
+	ELSE
+		cnt[].d = 0;          -- Reset counter
+		alt.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+
+	clk_out = alt;
+
+	record[].clk = clock; 
+	record[].clrn = VCC;
+	
+	jkff1.clk = clk_out; jkff1.clrn = VCC; jkff1.prn = VCC;
+	jkff1.j = VCC; jkff1.k = VCC;
+	
+	jkff2.clk = clk_out; jkff2.clrn = VCC; jkff2.prn = VCC;
+	jkff2.j = jkff1.q; jkff2.k = jkff1.q;
+
+	IF round[] > record[].q THEN
+		record[].d = round[];
+	ELSE
+		record[].d = record[];
+	END IF;
+	
+	IF idle_state THEN
+		dig[2] = (NOT jkff1.q) AND (NOT jkff2.q);
+		dig[3] = (    jkff1.q) AND (NOT jkff2.q);
+		
+		IF dig[3] THEN
+			TABLE 
+				round[4..0] => seg[7..0];
+				H"A"        => B"10011111";
+				H"B"        => B"10011111";
+				H"C"        => B"10011111";
+				H"D"        => B"10011111";
+				H"E"        => B"10011111";
+				H"F"        => B"10011111";
+				H"10"       => B"10011111";
+				H"11"       => B"10011111";
+				H"12"       => B"10011111";
+				H"13"       => B"10011111";
+				H"14"       => B"00100101";
+			END TABLE;
+		END IF;
+		
+		IF dig[2] THEN
+			TABLE 
+				round[4..0] => seg[7..0];
+				H"00"       => B"00000011"; -- "0"
+				H"01"       => B"10011111"; -- "1"
+				H"02"       => B"00100101"; -- "2"
+				H"03"       => B"00001101"; -- "3"
+				H"04"       => B"10011001"; -- "4"
+				H"05"       => B"01101001"; -- "5"
+				H"06"       => B"01000001"; -- "6"
+				H"07"       => B"00011111"; -- "7"
+				H"08"       => B"00000001"; -- "8"
+				H"09"       => B"00011001"; -- "9"
+				H"0A"       => B"00000011"; -- "0"
+				H"0B"       => B"10011111"; -- "1"
+				H"0C"       => B"00100101"; -- "2"
+				H"0D"       => B"00001101"; -- "3"
+				H"0E"       => B"10011001"; -- "4"
+				H"0F"       => B"01101001"; -- "5"
+				H"10"       => B"01000001"; -- "6"
+				H"11"       => B"00011111"; -- "7"
+				H"12"       => B"00000001"; -- "8"
+				H"13"       => B"00011001"; -- "9"
+				H"14"       => B"00000011"; -- "0"
+			END TABLE;
+		END IF;
+		
+	ELSE
+		IF NOT loser THEN
+			IF    data_in[] == B"1000" THEN dig[] = B"0001"; seg[] = GND;
+			ELSIF data_in[] == B"0100" THEN dig[] = B"0010"; seg[] = GND;
+			ELSIF data_in[] == B"0010" THEN dig[] = B"0100"; seg[] = GND;
+			ELSIF data_in[] == B"0001" THEN dig[] = B"1000"; seg[] = GND;
+			ELSIF data_in[] == B"1111" THEN dig[] = B"1111"; seg[] = GND;
+			ELSE									  dig[] = B"0000"; seg[] = GND;
+			END IF;
+		ELSE
+			dig[] = B"1111";
+			seg[] = (1, 0, 1, 1, 1, 1, 1, 1); -- "-"
+		END IF;
+	END IF;
 END;
+

@@ -24,6 +24,9 @@ SUBDESIGN FSM
 
    random_color[1..0] : INPUT;
 
+	current_round[4..0] : OUTPUT;
+	idle_state          : OUTPUT;
+	
    led_out[3..0]      : OUTPUT;
    loser              : OUTPUT;
 )
@@ -72,6 +75,9 @@ BEGIN
 	write_ptr.clk = clock;  write_ptr.clr  = GND;
 	read_ptr.clk = clock;
 	show_ptr.clk = clock;
+	
+	idle_state = fsm_states == IDLE;
+	current_round[] = game_round.q[]; 
 	
    -- --------------------------------------------------------
    -- FSM

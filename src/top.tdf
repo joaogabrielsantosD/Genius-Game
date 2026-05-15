@@ -3,6 +3,7 @@ TITLE "Top file";
 INCLUDE "src/Debounce/debounce.inc";
 INCLUDE "src/Buzzer/beep.inc";
 INCLUDE "src/PRNG/PRNG.inc";
+INCLUDE "src/SeteSeg/sete_seg.inc";
 INCLUDE "src/FSM/FSM.inc";
 
 CONSTANT MAX 			= 20;
@@ -18,12 +19,15 @@ SUBDESIGN top
 	
 	led[3..0] : OUTPUT;
 	buzzer    : OUTPUT;
+	dig[3..0] : OUTPUT;
+	seg[7..0] : OUTPUT;
 )
 
 VARIABLE
 	game_fsm : FSM WITH (ROUNDS = MAX_ROUNDS);
 	rng : PRNG;
 	b : beep;
+	display : sete_seg;
 	key0, key1, key2, key3 : debounce;
 	
 BEGIN
@@ -39,6 +43,13 @@ BEGIN
 	ASSERT (MAX_ROUNDS <= 20)
 	REPORT "o jogo nao pode ser maior que 20"
 	SEVERITY error;
+	
+	-- 7 segments Display Inputs --
+	display.data_in[]  = game_fsm.led_out[];
+	display.loser      = game_fsm.loser;
+	display.idle_state = game_fsm.idle_state;
+	display.round[]	 = game_fsm.current_round[];
+	display.clock      = clock;
 	
 	-- Random Generator Inputs --
 	rng.clock = clock;
@@ -68,5 +79,9 @@ BEGIN
 	-- FSM Outputs -- 
 	led[] = NOT game_fsm.led_out[];
 	buzzer = b.beep_out;
+	
+	-- 7 segments Display Outputs --
+	dig[] = NOT display.dig[];
+	seg[] = display.seg[];
 END;
 
