@@ -1,0 +1,140 @@
+TITLE "Buzzer tune";
+
+CONSTANT clk_FPGA = 50000000;
+CONSTANT freq_color1 = 392;
+CONSTANT freq_color2 = 523;
+CONSTANT freq_color3 = 659;
+CONSTANT freq_color4 = 784;
+CONSTANT freq_winner = 1046;
+CONSTANT freq_loser  = 196;
+
+CONSTANT overflow_f1 = CEIL(clk_FPGA DIV (freq_color1 * 2));
+CONSTANT overflow_f2 = CEIL(clk_FPGA DIV (freq_color2 * 2));
+CONSTANT overflow_f3 = CEIL(clk_FPGA DIV (freq_color3 * 2));
+CONSTANT overflow_f4 = CEIL(clk_FPGA DIV (freq_color4 * 2));
+CONSTANT overflow_f5 = CEIL(clk_FPGA DIV (freq_winner * 2));
+CONSTANT overflow_f6 = CEIL(clk_FPGA DIV (freq_loser  * 2));
+
+CONSTANT n_bits_f1 = CEIL(LOG2(overflow_f1));
+CONSTANT n_bits_f2 = CEIL(LOG2(overflow_f2));
+CONSTANT n_bits_f3 = CEIL(LOG2(overflow_f3));
+CONSTANT n_bits_f4 = CEIL(LOG2(overflow_f4));
+CONSTANT n_bits_f5 = CEIL(LOG2(overflow_f5));
+CONSTANT n_bits_f6 = CEIL(LOG2(overflow_f6));
+
+SUBDESIGN beep
+(
+	clock : INPUT;
+	data_in[3..0] : INPUT;
+	loser_flag : INPUT;
+	
+	beep_out : OUTPUT;
+)
+
+VARIABLE
+	cnt1[n_bits_f1..0] : DFF;
+	alt1               : TFF;
+	clk_out1           : NODE;
+	
+	cnt2[n_bits_f2..0] : DFF;
+	alt2               : TFF;
+	clk_out2           : NODE;
+	
+	cnt3[n_bits_f3..0] : DFF;
+	alt3               : TFF;
+	clk_out3           : NODE;
+	
+	cnt4[n_bits_f4..0] : DFF;
+	alt4               : TFF;
+	clk_out4           : NODE;
+	
+	cnt5[n_bits_f5..0] : DFF;
+	alt5               : TFF;
+	clk_out5           : NODE;
+	
+	cnt6[n_bits_f6..0] : DFF;
+	alt6               : TFF;
+	clk_out6           : NODE;
+
+BEGIN
+	cnt1[].clk = clock; alt1.clk   = clock;
+	
+	cnt2[].clk = clock; alt2.clk   = clock;
+	
+	cnt3[].clk = clock; alt3.clk   = clock;
+	
+	cnt4[].clk = clock; alt4.clk   = clock;
+	
+	cnt5[].clk = clock; alt5.clk   = clock;
+	
+	cnt6[].clk = clock; alt6.clk   = clock;
+
+	IF cnt1[] < overflow_f1 THEN
+		cnt1[].d = cnt1[] + 1;  -- Keep counting
+	ELSE
+		cnt1[].d = 0;          -- Reset counter
+		alt1.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+	
+	IF cnt2[] < overflow_f2 THEN
+		cnt2[].d = cnt2[] + 1;  -- Keep counting
+	ELSE
+		cnt2[].d = 0;          -- Reset counter
+		alt2.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+	
+	IF cnt3[] < overflow_f3 THEN
+		cnt3[].d = cnt3[] + 1;  -- Keep counting
+	ELSE
+		cnt3[].d = 0;          -- Reset counter
+		alt3.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+	
+	IF cnt4[] < overflow_f4 THEN
+		cnt4[].d = cnt4[] + 1;  -- Keep counting
+	ELSE
+		cnt4[].d = 0;          -- Reset counter
+		alt4.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+	
+	IF cnt5[] < overflow_f5 THEN
+		cnt5[].d = cnt5[] + 1;  -- Keep counting
+	ELSE
+		cnt5[].d = 0;          -- Reset counter
+		alt5.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+	
+	IF cnt6[] < overflow_f6 THEN
+		cnt6[].d = cnt6[] + 1;  -- Keep counting
+	ELSE
+		cnt6[].d = 0;          -- Reset counter
+		alt6.t = VCC;          -- Toggle alt to generate the divided clock edge
+	END IF;
+
+	clk_out1 = alt1;
+	clk_out2 = alt2;
+	clk_out3 = alt3;
+	clk_out4 = alt4;
+	clk_out5 = alt5;
+	clk_out6 = alt6;
+	
+
+	IF loser_flag == GND THEN
+		IF data_in[] == B"0001" THEN
+			beep_out = clk_out1;
+		ELSIF data_in[] == B"0010" THEN
+			beep_out = clk_out2;
+		ELSIF data_in[] == B"0100" THEN
+			beep_out = clk_out3;
+		ELSIF data_in[] == B"1000" THEN
+			beep_out = clk_out4;
+		ELSIF data_in[] == B"1111" THEN
+			beep_out = clk_out5;
+		ELSE
+			beep_out = GND;
+		END IF;
+	ELSE
+		beep_out = clk_out6; 
+	END IF;
+END;
+
