@@ -8,7 +8,7 @@ INCLUDE "src/FSM/FSM.inc";
 
 CONSTANT MAX 			= 20;
 DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);  -- The max game rounds can be is 50 rounds
-CONSTANT MAX_ROUNDS  = GAME_LIMIT(6); 		     -- Max game value in this section
+CONSTANT MAX_ROUNDS  = GAME_LIMIT(15); 		     -- Max game value in this section
 
 SUBDESIGN top
 (
