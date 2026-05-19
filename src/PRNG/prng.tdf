@@ -31,8 +31,8 @@ BEGIN
 	yn[].clk = clock;    yn[].clrn = reset;
 	seeded.clk = clock;  seeded.clrn = reset;
 
-	x_next[] = xn[].q XOR (xn[m-2..0].q, GND) XOR yn[].q;
-	y_next[] = yn[].q XOR (GND, yn[m-1..1].q) XOR x_next[];
+	x_next[] = (xn[m-2..0].q, GND) + yn[].q;
+	y_next[] = yn[].q + xn[].q;
 
 	IF seeded.q == GND THEN
 		xn[].d = SEED_X;
@@ -48,7 +48,7 @@ BEGIN
 		seeded.d = seeded.q;
 	END IF;
 
-	rand[] = xn[1..0].q XOR yn[1..0].q;
+	rand[] = xn[1..0].q XOR yn[7..6].q;
 	--rand[] = xn[m-2 .. m-3].q XOR yn[m-2 .. m-3].q;
 END;
 
