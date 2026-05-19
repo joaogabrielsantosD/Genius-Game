@@ -1,4 +1,4 @@
-TITLE "RAM memory";
+TITLE "RAM Single Port memory";
 
 SUBDESIGN ram_single_port 
 (
@@ -8,7 +8,10 @@ SUBDESIGN ram_single_port
 	ram_data_out[1..0] : OUTPUT;
 )
 VARIABLE
+	-- Memory registers:
+	-- 21 positions with 2 bits each
 	regs[20..0][1..0] : DFF;
+	
 BEGIN
 	regs[][].clk = ram_clk;
 	

@@ -1,13 +1,18 @@
 TITLE "Buzzer tune";
 
+-- FPGA main clock frequency
 CONSTANT clk_FPGA = 50000000;
+
+-- Tone frequencies
 CONSTANT freq_color1 = 392;
 CONSTANT freq_color2 = 523;
 CONSTANT freq_color3 = 659;
 CONSTANT freq_color4 = 784;
+
 CONSTANT freq_winner = 1046;
 CONSTANT freq_loser  = 196;
 
+-- Counter overflow values used for clock division
 CONSTANT overflow_f1 = CEIL(clk_FPGA DIV (freq_color1 * 2));
 CONSTANT overflow_f2 = CEIL(clk_FPGA DIV (freq_color2 * 2));
 CONSTANT overflow_f3 = CEIL(clk_FPGA DIV (freq_color3 * 2));
@@ -15,6 +20,7 @@ CONSTANT overflow_f4 = CEIL(clk_FPGA DIV (freq_color4 * 2));
 CONSTANT overflow_f5 = CEIL(clk_FPGA DIV (freq_winner * 2));
 CONSTANT overflow_f6 = CEIL(clk_FPGA DIV (freq_loser  * 2));
 
+-- Number of bits required for each counter
 CONSTANT n_bits_f1 = CEIL(LOG2(overflow_f1));
 CONSTANT n_bits_f2 = CEIL(LOG2(overflow_f2));
 CONSTANT n_bits_f3 = CEIL(LOG2(overflow_f3));
@@ -32,41 +38,42 @@ SUBDESIGN beep
 )
 
 VARIABLE
+	-- Tone generator for color 1
 	cnt1[n_bits_f1..0] : DFF;
 	alt1               : TFF;
 	clk_out1           : NODE;
 	
+	-- Tone generator for color 2
 	cnt2[n_bits_f2..0] : DFF;
 	alt2               : TFF;
 	clk_out2           : NODE;
 	
+	-- Tone generator for color 3
 	cnt3[n_bits_f3..0] : DFF;
 	alt3               : TFF;
 	clk_out3           : NODE;
 	
+	-- Tone generator for color 4
 	cnt4[n_bits_f4..0] : DFF;
 	alt4               : TFF;
 	clk_out4           : NODE;
 	
+	-- Winner tone generator
 	cnt5[n_bits_f5..0] : DFF;
 	alt5               : TFF;
 	clk_out5           : NODE;
 	
+	-- Loser tone generator
 	cnt6[n_bits_f6..0] : DFF;
 	alt6               : TFF;
 	clk_out6           : NODE;
 
 BEGIN
 	cnt1[].clk = clock; alt1.clk   = clock;
-	
 	cnt2[].clk = clock; alt2.clk   = clock;
-	
 	cnt3[].clk = clock; alt3.clk   = clock;
-	
 	cnt4[].clk = clock; alt4.clk   = clock;
-	
 	cnt5[].clk = clock; alt5.clk   = clock;
-	
 	cnt6[].clk = clock; alt6.clk   = clock;
 
 	IF cnt1[] < overflow_f1 THEN
@@ -118,7 +125,6 @@ BEGIN
 	clk_out5 = alt5;
 	clk_out6 = alt6;
 	
-
 	IF loser_flag == GND THEN
 		IF data_in[] == B"0001" THEN
 			beep_out = clk_out1;

@@ -6,9 +6,9 @@ INCLUDE "src/PRNG/PRNG.inc";
 INCLUDE "src/SeteSeg/sete_seg.inc";
 INCLUDE "src/FSM/FSM.inc";
 
-CONSTANT MAX 			= 20;
-DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);  -- The max game rounds can be is 50 rounds
-CONSTANT MAX_ROUNDS  = GAME_LIMIT(6); 		     -- Max game value in this section
+CONSTANT MAX 			= 20;						     -- Project limit game	
+DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);  -- The max game rounds can be is 20 rounds
+CONSTANT MAX_ROUNDS  = GAME_LIMIT(15); 		  -- Max game value in this section
 
 SUBDESIGN top
 (
@@ -24,11 +24,11 @@ SUBDESIGN top
 )
 
 VARIABLE
-	game_fsm : FSM WITH (ROUNDS = MAX_ROUNDS);
-	rng : PRNG;
-	b : beep;
-	display : sete_seg;
-	key0, key1, key2, key3 : debounce;
+	game_fsm : FSM WITH (ROUNDS = MAX_ROUNDS); -- Create FMS instance
+	rng 		: PRNG;									 -- Create Random Generator instance
+	b 			: beep;									 -- Create Buzzer instance
+	display 	: sete_seg;								 -- Create 7 segments display instance
+	key0, key1, key2, key3 : debounce; 			 -- Create debounce instance
 	
 BEGIN
 	DEFAULTS
@@ -37,7 +37,7 @@ BEGIN
 	END DEFAULTS;
 	
 	ASSERT (MAX_ROUNDS > 0)
-	REPORT "o jogo nao pode ser igual a zero"
+	REPORT "O jogo nao pode ser igual a zero"
 	SEVERITY error;
 	
 	ASSERT (MAX_ROUNDS <= 20)
@@ -52,8 +52,8 @@ BEGIN
 	display.clock      = clock;
 	
 	-- Random Generator Inputs --
-	rng.clock = clock;
-	rng.reset = rst_n;
+	rng.clock  = clock;
+	rng.reset  = rst_n;
 	rng.enable = VCC;
 	
 	-- Debounce Inputs --
@@ -65,19 +65,21 @@ BEGIN
 	-- FSM Inputs --
 	game_fsm.clock = clock;
 	game_fsm.reset = rst_n;
-	game_fsm.random_color[] = rng.rand[]; % PRNG OUTPUT %
-	game_fsm.key0 = key0.f_key_out; %  Debounce OUTPUT % game_fsm.key0_raw = key[0];
-	game_fsm.key1 = key1.f_key_out; %  Debounce OUTPUT %
-	game_fsm.key2 = key2.f_key_out; %  Debounce OUTPUT %
-	game_fsm.key3 = key3.f_key_out; %  Debounce OUTPUT % game_fsm.key3_raw = key[3];
+	game_fsm.random_color[] = rng.rand[]; % 	 PRNG OUTPUT	%
+	game_fsm.key0 = key0.f_key_out;		  %  Debounce OUTPUT % game_fsm.key0_raw = key[0];
+	game_fsm.key1 = key1.f_key_out; 		  %  Debounce OUTPUT %
+	game_fsm.key2 = key2.f_key_out; 		  %  Debounce OUTPUT %
+	game_fsm.key3 = key3.f_key_out; 		  %  Debounce OUTPUT % game_fsm.key3_raw = key[3];
 	
-	-- Buzzer inputs --
-	b.clock = clock;
-	b.data_in[] = game_fsm.led_out[];
+	-- Buzzer Inputs --
+	b.clock 		 = clock;
+	b.data_in[]  = game_fsm.led_out[];
 	b.loser_flag = game_fsm.loser;
 	
 	-- FSM Outputs -- 
 	led[] = NOT game_fsm.led_out[];
+	
+	-- Buzzer Outputs --
 	buzzer = b.beep_out;
 	
 	-- 7 segments Display Outputs --
