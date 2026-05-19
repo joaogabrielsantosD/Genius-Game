@@ -1,0 +1,39 @@
+TITLE "Increasing circular counter from i to j";
+
+CONSTANT min_cnt = 0;							-- Minimum counter value
+CONSTANT max_cnt = 21;							-- Maximum counter value
+CONSTANT n       = CEIL(LOG2(max_cnt));	-- Number of bits required to represent max_cnt
+
+SUBDESIGN contador
+(
+	clk, load, ena, clr : INPUT;
+	d[n-1..0] : INPUT;
+	
+	q[n-1..0] : OUTPUT;
+	tc        : OUTPUT;
+)
+
+VARIABLE
+	cnt[n-1..0] : DFF;  -- Main counter register
+	aux         : NODE; -- Internal node used for terminal count flag
+	
+BEGIN
+	cnt[].clk = clk;
+	
+	IF load == VCC THEN
+		cnt[].d = d[];
+	ELSIF clr == VCC THEN 
+		cnt[].d = min_cnt;
+	ELSIF (cnt[].q < max_cnt) & ena THEN
+		aux = GND;
+		cnt[].d = cnt[].q + 1;
+	ELSIF (cnt[].q >= max_cnt) & ena THEN
+		aux = VCC;
+		cnt[].d = min_cnt;
+	ELSE
+		cnt[].d = cnt[].q;
+	END IF;
+	
+	tc  = aux;
+	q[] = cnt[]; 
+END;

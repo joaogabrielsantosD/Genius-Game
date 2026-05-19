@@ -1,9 +1,16 @@
 # Quartus folders
+.qsys_edit/*
 output/**/*
+output_files/**/*
+simulation/**/*
 db/*
 incremental_db/*
 
+# venv
+.venv/*
+
 src/*.bak
+src/**/*.bak
 # *.qsf
 # *.qpf
 *.qws

@@ -1,27 +1,89 @@
-TITLE "Top level Entity";
-CONSTANT max_cnt = 10;
-CONSTANT n = CEIL(LOG2(max_cnt));
+TITLE "Top file";
+
+INCLUDE "src/Debounce/debounce.inc";
+INCLUDE "src/Buzzer/beep.inc";
+INCLUDE "src/PRNG/PRNG.inc";
+INCLUDE "src/SeteSeg/sete_seg.inc";
+INCLUDE "src/FSM/FSM.inc";
+
+CONSTANT MAX 			= 20;						     -- Project limit game	
+DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);  -- The max game rounds can be is 20 rounds
+CONSTANT MAX_ROUNDS  = GAME_LIMIT(15); 		  -- Max game value in this section
 
 SUBDESIGN top
 (
-	clk, load, ena, clr, d[n..0] : INPUT;
-	q[n..0], tc                  : OUTPUT;
+	clock : INPUT;
+	rst_n : INPUT;
+	
+	key[3..0] : INPUT;
+	
+	led[3..0] : OUTPUT;
+	buzzer    : OUTPUT;
+	dig[3..0] : OUTPUT;
+	seg[7..0] : OUTPUT;
 )
+
 VARIABLE
-	cnt[n..0] : DFF;
-	aux: NODE;
+	game_fsm : FSM WITH (ROUNDS = MAX_ROUNDS); -- Create FMS instance
+	rng 		: PRNG;									 -- Create Random Generator instance
+	b 			: beep;									 -- Create Buzzer instance
+	display 	: sete_seg;								 -- Create 7 segments display instance
+	key0, key1, key2, key3 : debounce; 			 -- Create debounce instance
+	
 BEGIN
 	DEFAULTS
-		q[] = 0; tc = GND;
+		led[]  = 0;
+		buzzer = GND;
 	END DEFAULTS;
-	cnt[].clk = clk;
-	cnt[].clrn = !clr;
-	IF load == VCC THEN cnt[].d = d[];
-	ELSIF () THEN
-		aux = VCC;
-		cnt[].d = 0;
-	ELSE cnt[n..0].d = cnt[n..0].q;
-	END IF;
-	tc = aux;
-	q[] = cnt[];
+	
+	ASSERT (MAX_ROUNDS > 0)
+	REPORT "O jogo nao pode ser igual a zero"
+	SEVERITY error;
+	
+	ASSERT (MAX_ROUNDS <= 20)
+	REPORT "o jogo nao pode ser maior que 20"
+	SEVERITY error;
+	
+	-- 7 segments Display Inputs --
+	display.data_in[]  = game_fsm.led_out[];
+	display.loser      = game_fsm.loser;
+	display.idle_state = game_fsm.idle_state;
+	display.round[]	 = game_fsm.current_round[];
+	display.clock      = clock;
+	
+	-- Random Generator Inputs --
+	rng.clock  = clock;
+	rng.reset  = rst_n;
+	rng.enable = VCC;
+	
+	-- Debounce Inputs --
+	key0.clock  = clock; key0.key_in = key[0];
+	key1.clock  = clock; key1.key_in = key[1];
+	key2.clock  = clock; key2.key_in = key[2];
+	key3.clock  = clock; key3.key_in = key[3];
+	
+	-- FSM Inputs --
+	game_fsm.clock = clock;
+	game_fsm.reset = rst_n;
+	game_fsm.random_color[] = rng.rand[]; % 	 PRNG OUTPUT	%
+	game_fsm.key0 = key0.f_key_out;		  %  Debounce OUTPUT % game_fsm.key0_raw = key[0];
+	game_fsm.key1 = key1.f_key_out; 		  %  Debounce OUTPUT %
+	game_fsm.key2 = key2.f_key_out; 		  %  Debounce OUTPUT %
+	game_fsm.key3 = key3.f_key_out; 		  %  Debounce OUTPUT % game_fsm.key3_raw = key[3];
+	
+	-- Buzzer Inputs --
+	b.clock 		 = clock;
+	b.data_in[]  = game_fsm.led_out[];
+	b.loser_flag = game_fsm.loser;
+	
+	-- FSM Outputs -- 
+	led[] = NOT game_fsm.led_out[];
+	
+	-- Buzzer Outputs --
+	buzzer = b.beep_out;
+	
+	-- 7 segments Display Outputs --
+	dig[] = NOT display.dig[];
+	seg[] = display.seg[];
 END;
+
