@@ -1,20 +1,21 @@
-TITLE "Contador circular crescente de i a j";
+TITLE "Increasing circular counter from i to j";
 
-CONSTANT min_cnt = 0;
-CONSTANT max_cnt = 21;
-CONSTANT n       = CEIL(LOG2(max_cnt));
+CONSTANT min_cnt = 0;							-- Minimum counter value
+CONSTANT max_cnt = 21;							-- Maximum counter value
+CONSTANT n       = CEIL(LOG2(max_cnt));	-- Number of bits required to represent max_cnt
 
 SUBDESIGN contador
 (
 	clk, load, ena, clr : INPUT;
 	d[n-1..0] : INPUT;
+	
 	q[n-1..0] : OUTPUT;
 	tc        : OUTPUT;
 )
 
 VARIABLE
-	cnt[n-1..0] : DFF;
-	aux         : NODE;
+	cnt[n-1..0] : DFF;  -- Main counter register
+	aux         : NODE; -- Internal node used for terminal count flag
 	
 BEGIN
 	cnt[].clk = clk;

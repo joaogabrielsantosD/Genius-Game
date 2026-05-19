@@ -1,7 +1,7 @@
-TITLE "Display de 7 segmentos";
+TITLE "7-segment display";
 
 CONSTANT clk_FPGA = 50000000;								  -- Clock frequency of the FPGA in Hz
-CONSTANT freq = 10000;										  -- Desired output frequency for the debounce sampling clock (50 Hz)
+CONSTANT freq = 10000;										  -- Desired output frequency for the debounce sampling clock (10KHz)
 CONSTANT overflow_f = CEIL(clk_FPGA DIV (freq * 2)); -- Counter overflow value: number of FPGA clock cycles per half-period of the sampling clock
 CONSTANT n_bits_f = CEIL(LOG2(overflow_f)); 			  -- Number of bits required for the counter to reach overflow_f
 
@@ -22,8 +22,9 @@ VARIABLE
 	alt              : TFF;  -- Toggle flip-flop that produces the divided clock signal
 	clk_out          : NODE; -- Internal node carrying the 50 Hz divided clock
 
-	record[4..0] : DFFE;
+	record[4..0] : DFFE;     -- Stores the highest round reached.
 	
+	-- Flip-flops used to switch between displays.
 	jkff1        : JKFF;
 	jkff2        : JKFF;
 	
@@ -93,6 +94,7 @@ BEGIN
 				H"07"        => B"00011111"; -- "7"
 				H"08"        => B"00000001"; -- "8"
 				H"09"        => B"00011001"; -- "9"
+				
 				H"0A"        => B"00000011"; -- "0"
 				H"0B"        => B"10011111"; -- "1"
 				H"0C"        => B"00100101"; -- "2"

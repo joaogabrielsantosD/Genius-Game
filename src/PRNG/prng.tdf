@@ -1,6 +1,9 @@
 TITLE "PRNG";	
 
+-- Number of bits used by the generators
 CONSTANT m = 8;
+
+-- Initial seed values
 CONSTANT SEED_X = B"10100101";
 CONSTANT SEED_Y = B"01100110";
 
@@ -13,12 +16,12 @@ SUBDESIGN PRNG
 )
 
 VARIABLE
-	xn[m-1..0] : DFF;
-	yn[m-1..0] : DFF;
-	seeded     : DFF;
+	xn[m-1..0] : DFF;	-- First pseudo-random register
+	yn[m-1..0] : DFF;	-- Second pseudo-random register
+	seeded     : DFF;	-- Indicates whether initial seeds were loaded
 
-	x_next[m-1..0] : NODE;
-	y_next[m-1..0] : NODE;
+	x_next[m-1..0] : NODE; 	-- Next value for xn
+	y_next[m-1..0] : NODE; 	-- Next value for yn
 
 BEGIN
 	--DEFAULTS

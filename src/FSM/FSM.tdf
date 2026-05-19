@@ -3,10 +3,12 @@ TITLE "FSM";
 INCLUDE "src/RAM/ram_single_port.inc";
 INCLUDE "src/Contador/contador.inc";
 
+-- Delay constants
 CONSTANT DELAY_500MS = 50000000;
 CONSTANT DELAY_250MS = DELAY_500MS DIV 2;
 CONSTANT DELAY_5S    = DELAY_500MS * 10;
 
+-- Game configuration
 PARAMETERS (ROUNDS = 5);
 CONSTANT MAX_ROUNDS = ROUNDS - 1;
 
@@ -32,6 +34,7 @@ SUBDESIGN FSM
 )
 
 VARIABLE
+   -- Main FSM states
    fsm_states : MACHINE WITH STATES (
       IDLE,
       START_GAME,
@@ -44,16 +47,20 @@ VARIABLE
       PLAYER_WIN,
       PLAYER_LOSE
    );
-
+	
+	-- RAM memory
    ram : ram_single_port;
 	
+	-- Counters
 	game_round : contador;
 	write_ptr  : contador;
 	read_ptr   : contador;
 	show_ptr   : contador;
    
+	-- Delay counter
 	delay[31..0] : DFF;
 	
+	-- Auxiliary logic signals
 	any_key_pressed : NODE;
 	correct_key		 : NODE;
  	
@@ -78,13 +85,15 @@ BEGIN
 	
 	idle_state = fsm_states == IDLE;
 	current_round[] = game_round.q[];
+	
    -- --------------------------------------------------------
    -- FSM
    -- --------------------------------------------------------
    CASE fsm_states IS
 
       -- ------------------------------------------------------
-      -- IDLE
+      -- IDLE:
+		-- Waits for player to start the game
       -- ------------------------------------------------------
       WHEN IDLE =>
 			led_out[]       = 0;
@@ -100,7 +109,8 @@ BEGIN
          END IF;
 
       -- ------------------------------------------------------
-      -- START_GAME
+      -- START_GAME:
+		-- Stores a new random color into RAM
       -- ------------------------------------------------------
       WHEN START_GAME =>
          ram.ram_addr[] = write_ptr.q[];
@@ -123,7 +133,8 @@ BEGIN
          END IF;
 
       -- ------------------------------------------------------
-      -- WAIT_BETWEEN_COLORS
+      -- WAIT_BETWEEN_COLORS:
+		-- Small pause between displayed colors
       -- ------------------------------------------------------
       WHEN WAIT_BETWEEN_COLORS =>
          ram.ram_wren    = GND;
@@ -139,8 +150,10 @@ BEGIN
             delay[].d  = 0;
             fsm_states = SHOW_SEQUENCE;
          END IF;
+			
       -- ------------------------------------------------------
-      -- SHOW_SEQUENCE
+      -- SHOW_SEQUENCE:
+		-- Displays the stored sequence to the player
       -- ------------------------------------------------------
       WHEN SHOW_SEQUENCE =>
          ram.ram_addr[] = show_ptr.q[];
@@ -150,6 +163,7 @@ BEGIN
          write_ptr.load  = GND; write_ptr.ena  = GND; write_ptr.clr  = GND;
          read_ptr.load   = GND; read_ptr.ena   = GND; read_ptr.clr   = GND;
          show_ptr.load   = GND; show_ptr.ena   = GND; show_ptr.clr   = GND;
+			
          IF delay[] < DELAY_250MS THEN
             delay[].d = delay[] + 1;
             IF    ram.ram_data_out[] == B"00" THEN led_out[] = B"0001";
@@ -170,7 +184,8 @@ BEGIN
          END IF;
 
       -- ------------------------------------------------------
-      -- UPDATE_SHOW_PTR
+      -- UPDATE_SHOW_PTR:
+		-- Advances show pointer
       -- ------------------------------------------------------
       WHEN UPDATE_SHOW_PTR =>
          ram.ram_wren    = GND;
@@ -181,8 +196,10 @@ BEGIN
 
          delay[].d    = 0;
          fsm_states   = WAIT_BETWEEN_COLORS;
+			
       -- ------------------------------------------------------
-      -- READ_COLOR
+      -- READ_COLOR:
+		-- Waits for player input
       -- ------------------------------------------------------
       WHEN READ_COLOR =>
          ram.ram_addr[] = read_ptr.q[];
@@ -236,7 +253,8 @@ BEGIN
          END IF;
 
       -- ------------------------------------------------------
-      -- UPDATE_READ_PTR
+      -- UPDATE_READ_PTR:
+		-- Advances read pointer
       -- ------------------------------------------------------
       WHEN UPDATE_READ_PTR =>
          ram.ram_wren    = GND;
@@ -254,7 +272,8 @@ BEGIN
          END IF;
 
       -- ------------------------------------------------------
-      -- NEW_ROUND
+      -- NEW_ROUND:
+		-- Starts a new round
       -- ------------------------------------------------------
       WHEN NEW_ROUND =>
          ram.ram_wren    = GND;
@@ -272,16 +291,15 @@ BEGIN
          ELSE
             game_round.ena = VCC;
             write_ptr.ena  = VCC;
-
             delay[].d      = 0;
-
             read_ptr.clr   = VCC;
             show_ptr.clr   = VCC;
             fsm_states     = START_GAME;
          END IF;
 
       -- ------------------------------------------------------
-      -- PLAYER_WIN
+      -- PLAYER_WIN:
+		-- Final victory state
       -- ------------------------------------------------------
       WHEN PLAYER_WIN =>
          ram.ram_wren    = GND;
@@ -295,7 +313,8 @@ BEGIN
          fsm_states = PLAYER_WIN;
 
       -- ------------------------------------------------------
-      -- PLAYER_LOSE
+      -- PLAYER_LOSE:
+		-- Final defeat state
       -- ------------------------------------------------------
       WHEN PLAYER_LOSE =>
          ram.ram_wren    = GND;
