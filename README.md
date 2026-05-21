@@ -8,7 +8,14 @@ project/
 ├── test/          # Unity tests
 ├── sim/           # Testbenches and simulation vectors (.vwf, .tbl)
 ├── constraints/   # Pinout files (.qsf, .acf)
-├── output/        # Generated files: .sof, .pof, .rpt
 ├── docs/          # Schematics, specifications
 └── README.md
 ```
+
+- Can use the ```src/top.tdf``` (AHDL file) or ```tests/top_test.bdf``` (Block Diagram file) to flash the firmware.
+
+### Top Block Diagram
+[<img src="docs/top_test.png" alt="Top Block Diagram" width="500" />](docs/top_test.png)
+
+### Top RTL connection using Blocks Diagrams
+[<img src="docs/subtop_test.png" alt="Top RTL Block Diagram" width="500" />](docs/subtop_test.png)
