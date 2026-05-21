@@ -3,7 +3,7 @@ TITLE "Top file";
 INCLUDE "src/Debounce/debounce.inc";
 INCLUDE "src/Buzzer/beep.inc";
 INCLUDE "src/PRNG/PRNG.inc";
-INCLUDE "src/SeteSeg/sete_seg.inc";
+INCLUDE "src/SevenSeg/seven_seg.inc";
 INCLUDE "src/FSM/FSM.inc";
 
 CONSTANT MAX 			= 20;						     -- Project limit game	
@@ -27,7 +27,7 @@ VARIABLE
 	game_fsm : FSM WITH (ROUNDS = MAX_ROUNDS); -- Create FMS instance
 	rng 		: PRNG;									 -- Create Random Generator instance
 	b 			: beep;									 -- Create Buzzer instance
-	display 	: sete_seg;								 -- Create 7 segments display instance
+	display 	: seven_seg;							 -- Create 7 segments display instance
 	key0, key1, key2, key3 : debounce; 			 -- Create debounce instance
 	
 BEGIN

@@ -1,7 +1,7 @@
 TITLE "FSM";
 
 INCLUDE "src/RAM/ram_single_port.inc";
-INCLUDE "src/Contador/contador.inc";
+INCLUDE "src/Counter/counter.inc";
 
 -- Delay constants
 CONSTANT DELAY_500MS = 50000000;
@@ -10,7 +10,7 @@ CONSTANT DELAY_5S    = DELAY_500MS * 10;
 
 -- Game configuration
 PARAMETERS (ROUNDS = 5);
-CONSTANT MAX_ROUNDS = ROUNDS - 1;
+CONSTANT MAX_ROUNDS = ROUNDS;
 
 SUBDESIGN FSM
 (
@@ -52,10 +52,10 @@ VARIABLE
    ram : ram_single_port;
 	
 	-- Counters
-	game_round : contador;
-	write_ptr  : contador;
-	read_ptr   : contador;
-	show_ptr   : contador;
+	game_round : counter;
+	write_ptr  : counter;
+	read_ptr   : counter;
+	show_ptr   : counter;
    
 	-- Delay counter
 	delay[31..0] : DFF;
@@ -180,7 +180,7 @@ BEGIN
             ELSE
                delay[].d  = 0;
                fsm_states = UPDATE_SHOW_PTR;
-         END IF;
+				END IF;
          END IF;
 
       -- ------------------------------------------------------
@@ -210,13 +210,11 @@ BEGIN
          read_ptr.load   = GND; read_ptr.ena   = GND; read_ptr.clr   = GND;
          show_ptr.load   = GND; show_ptr.ena   = GND; show_ptr.clr   = GND;
 
-         -- Aguarda 2 ciclos por causa da latência da RAM
          IF delay[] < 2 THEN
             delay[].d = delay[] + 1;
             led_out[] = 0;
             fsm_states = READ_COLOR;
          ELSE
-            -- Dado já é válido, acende LED conforme tecla pressionada
             IF    key0 THEN led_out[] = B"0001";
             ELSIF key1 THEN led_out[] = B"0010";
             ELSIF key2 THEN led_out[] = B"0100";

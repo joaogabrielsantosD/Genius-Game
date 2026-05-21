@@ -4,7 +4,7 @@ CONSTANT min_cnt = 0;							-- Minimum counter value
 CONSTANT max_cnt = 21;							-- Maximum counter value
 CONSTANT n       = CEIL(LOG2(max_cnt));	-- Number of bits required to represent max_cnt
 
-SUBDESIGN contador
+SUBDESIGN counter
 (
 	clk, load, ena, clr : INPUT;
 	d[n-1..0] : INPUT;
