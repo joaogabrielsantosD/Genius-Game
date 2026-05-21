@@ -38,13 +38,19 @@ BEGIN
 		buzzer = GND;
 	END DEFAULTS;
 	
-	ASSERT (MAX_ROUNDS > 0)
-	REPORT "O jogo nao pode ser igual a zero"
-	SEVERITY error;
+	ASSERT (MAX_ROUNDS > 0 AND MAX > 0)
+		REPORT "The number of rounds cannot be 0."
+		SEVERITY error;
 	
-	ASSERT (MAX_ROUNDS <= 20)
-	REPORT "o jogo nao pode ser maior que 20"
-	SEVERITY error;
+	ASSERT (MAX <= 20)
+		REPORT "The maximum quantity in the game cannot exceed 20, currently: (%)" 
+			MAX
+		SEVERITY error;
+		
+	ASSERT (GAME_MAX_ROUNDS <= MAX)
+		REPORT "The maximum number of rounds was set to (%); because it exceeds the system's maximum number of rounds, the value of rounds will be (%)."
+			GAME_MAX_ROUNDS, MAX_ROUNDS
+		SEVERITY WARNING;
 	
 	-- 7 segments Display Inputs --
 	display.data_in[]  = game_fsm.led_out[];
