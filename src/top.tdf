@@ -6,9 +6,11 @@ INCLUDE "src/PRNG/PRNG.inc";
 INCLUDE "src/SevenSeg/seven_seg.inc";
 INCLUDE "src/FSM/FSM.inc";
 
-CONSTANT MAX 			= 20;						     -- Project limit game	
-DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);  -- The max game rounds can be is 20 rounds
-CONSTANT MAX_ROUNDS  = GAME_LIMIT(15); 		  -- Max game value in this section
+PARAMETERS (MAX = 20);
+PARAMETERS (GAME_MAX_ROUNDS = 15);
+
+DEFINE GAME_LIMIT(a) = ((a < MAX) ? a : MAX);       -- The max game rounds can be is 20 rounds
+CONSTANT MAX_ROUNDS  = GAME_LIMIT(GAME_MAX_ROUNDS); -- Max game value in this section
 
 SUBDESIGN top
 (

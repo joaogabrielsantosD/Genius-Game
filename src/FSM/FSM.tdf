@@ -70,6 +70,14 @@ BEGIN
       loser      = GND;
    END DEFAULTS;
 	
+	ASSERT (MAX_ROUNDS > 0)
+	REPORT "O jogo nao pode ser igual a zero"
+	SEVERITY error;
+	
+	ASSERT (MAX_ROUNDS <= 20)
+	REPORT "o jogo nao pode ser maior que 20"
+	SEVERITY error;
+	
    fsm_states.clk   = clock;
    fsm_states.reset = !reset;
 

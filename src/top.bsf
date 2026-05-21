@@ -73,7 +73,18 @@ https://fpgasoftware.intel.com/eula.
 		(text "seg[7..0]" (rect 113 75 147 87)(font "Arial" ))
 		(line (pt 168 80)(pt 152 80)(line_width 3))
 	)
+	(parameter
+		"MAX"
+		"20"
+		""
+	)
+	(parameter
+		"GAME_MAX_ROUNDS"
+		"15"
+		""
+	)
 	(drawing
 		(rectangle (rect 16 16 152 96)(line_width 1))
 	)
+	(annotation_block (parameter)(rect 184 -64 284 16))
 )
